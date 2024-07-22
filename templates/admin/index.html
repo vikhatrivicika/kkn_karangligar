@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Panel</title>
+</head>
+<body>
+    <h1>Admin Panel</h1>
+    <ul>
+        <li><a href="{{ url_for('admin_posts') }}">Manage Posts</a></li>
+        <li><a href="{{ url_for('admin_labels') }}">Manage Labels</a></li>
+        <li><a href="{{ url_for('admin_data') }}">Manage Data</a></li>
+    </ul>
+    <a href="{{ url_for('logout') }}">Logout</a>
+</body>
+</html>

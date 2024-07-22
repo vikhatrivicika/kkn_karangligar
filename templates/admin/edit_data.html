@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Data</title>
+</head>
+<body>
+    <h1>Edit Data</h1>
+    <form action="" method="post">
+        <label for="judul">Judul :</label>
+        <input type="text" id="judul" name="judul" value="{{ data.judul_tmd }}">
+        <br><br>
+        <label for="keterangan">Description :</label>
+        <input type="text" id="keterangan" name="keterangan" value="{{ data.keterangan_tmd }}">
+        <br><br>
+        <input type="submit" value="Update">
+    </form>
+</body>
+</html>

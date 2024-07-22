@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Manage Data</title>
+    <script>
+        function updateActiveStatus(id, isChecked) {
+            const xhr = new XMLHttpRequest();
+            const url = `/admin/update_active/${id}`;
+            const params = `active=${isChecked ? 1 : 0}`;
+            
+            xhr.open("POST", url, true);
+            xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            xhr.send(params);
+
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState == 4 && xhr.status == 200) {
+                    alert('Status updated successfully');
+                }
+            };
+        }
+    </script>
+</head>
+<body>
+    <h1>Manage Data</h1>
+    <form action="/admin/data" method="post" enctype="multipart/form-data">
+        <label for="file">Choose file:</label>
+        <input type="file" id="file" name="file" accept=".csv, .xls, .xlsx">
+        <br><br>
+        <label for="judul">Judul :</label>
+        <input type="text" id="judul" name="judul">
+        <br><br>
+        <label for="keterangan">Description :</label>
+        <input type="text" id="keterangan" name="keterangan">
+        <br><br>
+        <input type="submit" value="Upload">
+    </form>
+    <br>
+    <h2>Data Table</h2>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nama</th>
+                <th>Judul</th>
+                <th>Keterangan</th>
+                <th>Active</th>
+                <th>Edit</th>
+                <th>Delete</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in data %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ row.nama_tmd }}</td>
+                <td>{{ row.judul_tmd }}</td>
+                <td>{{ row.keterangan_tmd }}</td>
+                <td>
+                    <input type="checkbox" {% if row.active_tmd == '1' %} checked {% endif %} 
+                           onclick="updateActiveStatus({{ row.id_tmd }}, this.checked)">
+                </td>
+                <td>
+                    <a href="/admin/edit_data/{{ row.id_tmd }}">Edit</a>
+                </td>
+                <td>
+                    <form action="/admin/delete_data/{{ row.id_tmd }}" method="post" style="display:inline;">
+                        <input type="submit" value="Delete" onclick="return confirm('Are you sure you want to delete this item?');">
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

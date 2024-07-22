@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <title>Tentang Desa Karangligar</title>
+
+  <!-- Bootstrap core CSS -->
+  <link href="../static/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Additional CSS Files -->
+  <link rel="stylesheet" href="../static/assets/css/fontawesome.css">
+  <link rel="stylesheet" href="../static/assets/css/templatemo-tale-seo-agency.css">
+  <link rel="stylesheet" href="../static/assets/css/owl.css">
+  <link rel="stylesheet" href="../static/assets/css/animate.css">
+  <link rel="stylesheet" href="https://unpkg.com/swiper@7/swiper-bundle.min.css" />
+</head>
+
+<body>
+  <!-- ***** Preloader Start ***** -->
+  <div id="js-preloader" class="js-preloader">
+    <div class="preloader-inner">
+      <span class="dot"></span>
+      <div class="dots">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </div>
+  </div>
+  <!-- ***** Preloader End ***** -->
+
+  <!-- ***** Header Area Start ***** -->
+  <header class="header-area header-sticky">
+    <div class="container">
+      <div class="row">
+        <div class="col-12">
+          <nav class="main-nav">
+            <!-- ***** Logo Start ***** -->
+            <a href="index.html" class="logo">
+              <img src="../static/assets/images/logo.png" alt="" style="max-width: 112px;">
+            </a>
+            <!-- ***** Logo End ***** -->
+            <!-- ***** Menu Start ***** -->
+            <ul class="nav">
+              <li class="scroll-to-section"><a href="#top" class="active">Beranda</a></li>
+              <li class="scroll-to-section"><a href="#tentang">Tentang Desa</a></li>
+              <li class="scroll-to-section"><a href="#kegiatan">Kegiatan</a></li>
+              <li class="scroll-to-section"><a href="#info">Informasi</a></li>
+              <li class="scroll-to-section"><a href="#kontak">Kontak</a></li>
+            </ul>
+            <a class='menu-trigger'>
+              <span>Menu</span>
+            </a>
+            <!-- ***** Menu End ***** -->
+          </nav>
+        </div>
+      </div>
+    </div>
+  </header>
+  <!-- ***** Header Area End ***** -->
+
+  <div class="main-banner" id="top">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-7">
+          <div class="caption header-text">
+            <h6>DESA KARANGLIGAR</h6>
+            <div class="line-dec"></div>
+            <h4>Selamat Datang di <em>Website</em> <span>Desa Karangligar</span></h4>
+            <p>Website ini menyediakan informasi tentang Desa Karangligar serta kegiatan yang dilakukan di desa ini.</p>
+            <div class="main-button scroll-to-section"><a href="#tentang">Pelajari Lebih Lanjut</a></div>
+            <span>atau</span>
+            <div class="second-button"><a href="#kegiatan">Lihat Kegiatan</a></div>
+          </div>
+        </div>
+        <div class="col-lg-5">
+          <div class="image-container">
+            <img src="../static/assets/images/IMG_20240715_130636.jpg" alt="Desa Karangligar">
+            <div class="blur-effect"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="services section" id="tentang">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-lg-10">
+          <div class="section-heading text-center">
+            <h2>Cek Informasi <em>Masyarakat</em> &amp; <span>Desa Karangligar</span></h2>
+            <div class="line-dec"></div>
+            <p>Desa Karangligar adalah sebuah desa yang terletak di wilayah XYZ. Desa ini dikenal dengan berbagai kegiatan masyarakat yang aktif dan kontribusi nyata dari penduduknya.</p>
+          </div>
+          <div class="row">
+            {% for data in data %}
+            <div class="col-lg-6 col-sm-6 text-center">
+              <div class="service-item">
+                <div class="icon">
+                  <a href="{{ url_for('informasi', id=data.id_tmd) }}">
+                    <img src="../static/assets/images/services-01.jpg" alt="Kegiatan Desa" class="templatemo-feature">
+                  </a>
+                </div>
+                <h4><a href="{{ url_for('form_page', id=data.id_tmd) }}">{{ data.judul_tmd }}</a></h4>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="projects section" id="kegiatan">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-6">
+          <div class="section-heading">
+            <h2>Jelajahi <em>Kegiatan</em> &amp; <span>Proyek Desa</span></h2>
+            <div class="line-dec"></div>
+            <p>Berikut adalah beberapa kegiatan dan proyek yang telah dilakukan di Desa Karangligar.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-lg-12">
+          <div class="owl-features owl-carousel">
+            {% for post in posts %}
+            <div class="item">
+              <img src="../uploads/{{ post.gambar_ttp }}" alt="">
+              <div class="down-content">
+                <h4>{{ post.judul_ttp }}</h4>
+                <a href="{{ url_for('blog', id=post.id_ttp) }}"><i class="fa fa-link"></i></a>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+ <div class="services section" id="info">
+  <div class="container">
+      <div class="row justify-content-center">
+          <div class="col-lg-10">
+              <div class="section-heading text-center">
+                  <h2>Cek Informasi <em>Masyarakat</em> &amp; <span>Desa Karangligar</span></h2>
+                  <div class="line-dec"></div>
+                  <p>Desa Karangligar adalah sebuah desa yang terletak di wilayah XYZ. Desa ini dikenal dengan berbagai kegiatan masyarakat yang aktif dan kontribusi nyata dari penduduknya.</p>
+              </div>
+              <div class="row">
+                  <!-- Mulai loop data dummy -->
+                  {% for i in range(20) %}
+                  <div class="col-lg-2 col-md-3 col-sm-4 col-6 text-center">
+                      <div class="service-item">
+                          <div class="icon">
+                              <a href="{{ url_for('form_page', id=i+1) }}">
+                                  <img src="../static/assets/images/projects-02.jpg" alt="Kegiatan Desa" class="templatemo-feature">
+                              </a>
+                          </div>
+                          <h4><a href="{{ url_for('form_page', id=i+1) }}">Judul Informasi {{ i+1 }}</a></h4>
+                      </div>
+                  </div>
+                  {% endfor %}
+                  <!-- Selesai loop data dummy -->
+              </div>
+          </div>
+      </div>
+  </div>
+</div>
+
+  <footer>
+    <div class="container">
+      <div class="col-lg-12">
+        <p>Copyright © 2036 <a href="#">Desa Karangligar</a>. All rights reserved.
+
+          <br>Design: <a href="https://templatemo.com" target="_blank">TemplateMo</a> Distribution: <a href="https://themewagon.com">ThemeWagon</a>
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <!-- Bootstrap core JavaScript -->
+  <script src="../static/vendor/jquery/jquery.min.js"></script>
+  <script src="../static/vendor/bootstrap/js/bootstrap.min.js"></script>
+  <script src="../static/assets/js/isotope.min.js"></script>
+  <script src="../static/assets/js/owl-carousel.js"></script>
+  <script src="../static/assets/js/tabs.js"></script>
+  <script src="../static/assets/js/popup.js"></script>
+  <script src="../static/assets/js/custom.js"></script>
+
+</body>
+
+</html>

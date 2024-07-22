@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Post</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script src="https://cdn.ckeditor.com/4.16.2/standard/ckeditor.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h2>Edit Post</h2>
+        <form method="POST" action="{{ url_for('edit_post', id=post.id_ttp) }}" enctype="multipart/form-data">
+            <label for="judul_ttp">Title:</label>
+            <input type="text" id="judul_ttp" name="judul_ttp" value="{{ post.judul_ttp }}" required>
+            <label for="postingan_ttp">Content:</label>
+            <textarea id="postingan_ttp" name="postingan_ttp" required>{{ post.postingan_ttp }}</textarea>
+            <script>
+                CKEDITOR.replace('postingan_ttp', {
+                    filebrowserUploadUrl: '{{ url_for("upload") }}',
+                    filebrowserUploadMethod: 'form'
+                });
+            </script>
+            <label for="id_tml">Label:</label>
+            <select id="id_tml" name="id_tml" required>
+                <option value="" disabled>Select a label</option>
+                {% for label in labels %}
+                    <option value="{{ label.id_tml }}" {% if label.id_tml == post.id_tml %}selected{% endif %}>{{ label.nama_tml }}</option>
+                {% endfor %}
+            </select>
+            <label for="gambar_ttp">Image:</label>
+            <input type="file" id="gambar_ttp" name="gambar_ttp" accept="image/*">
+            {% if post.gambar_ttp %}
+                <p>Current Image: <img src="{{ url_for('uploaded_file', filename=post.gambar_ttp) }}" alt="Current Image" style="max-width: 200px;"></p>
+            {% endif %}
+            <button type="submit">Update Post</button>
+        </form>
+    </div>
+</body>
+</html>
