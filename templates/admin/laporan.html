@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Laporan</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script>
+        function updateLaporanStatus(id, isChecked) {
+            const xhr = new XMLHttpRequest();
+            const url = `/admin/update_laporan_active/${id}`;
+            const params = `active=${isChecked ? 1 : 0}`;
+            
+            xhr.open("POST", url, true);
+            xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            xhr.send(params);
+
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState == 4 && xhr.status == 200) {
+                    alert('Laporan status updated successfully');
+                }
+            };
+        }
+    </script>
+</head>
+<body>
+    <h2 class="mt-4">Manage Laporan</h2>
+    <hr>
+    <form action="{{ url_for('admin_laporan_add') }}" method="post" enctype="multipart/form-data" class="mb-3">
+        <div class="form-group">
+            <label for="judul_tmla">Judul:</label>
+            <input type="text" class="form-control" name="judul_tmla" required>
+        </div>
+        <div class="form-group">
+            <label for="file_tmla">File:</label>
+            <input type="file" class="form-control" name="file_tmla" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Add</button>
+    </form>
+    
+    <h2 class="mt-4 text-center">Data Laporan</h2>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>File</th>
+                <th>Judul</th>
+                <th>Status</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for laporan in laporan %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ laporan.file_tmla }}</td>
+                <td>{{ laporan.judul_tmla }}</td>
+                <td>
+                    <input type="checkbox" {% if laporan.active_tmla == '1' %} checked {% endif %} 
+                           onclick="updateLaporanStatus({{ laporan.id_tmla }}, this.checked)">
+                </td>
+                <td>
+                    <a href="{{ url_for('admin_laporan_edit', id=laporan.id_tmla) }}" class="btn btn-warning btn-sm">Edit</a>
+                    <form action="{{ url_for('admin_laporan_delete', id=laporan.id_tmla) }}" method="post" style="display:inline;">
+                        <input type="submit" value="Delete" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?')">
+                    </form>
+                    <a href="{{ url_for('admin_laporan_detail', id=laporan.id_tmla) }}" class="btn btn-info btn-sm">Detail</a>
+                </td>
+                
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

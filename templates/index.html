@@ -50,7 +50,7 @@
               <li class="scroll-to-section"><a href="#top" class="active">Beranda</a></li>
               <li class="scroll-to-section"><a href="#tentang">Tentang Desa</a></li>
               <li class="scroll-to-section"><a href="#kegiatan">Kegiatan</a></li>
-              <li class="scroll-to-section"><a href="#info">Informasi</a></li>
+              <li class="scroll-to-section"><a href="#info">Form</a></li>
               <li class="scroll-to-section"><a href="#kontak">Kontak</a></li>
             </ul>
             <a class='menu-trigger'>
@@ -93,9 +93,9 @@
       <div class="row justify-content-center">
         <div class="col-lg-10">
           <div class="section-heading text-center">
-            <h2>Cek Informasi <em>Masyarakat</em> &amp; <span>Desa Karangligar</span></h2>
+            <h2>Cek Informasi <em>tentang</em> Masyarakat <span>Desa Karangligar</span></h2>
             <div class="line-dec"></div>
-            <p>Desa Karangligar adalah sebuah desa yang terletak di wilayah XYZ. Desa ini dikenal dengan berbagai kegiatan masyarakat yang aktif dan kontribusi nyata dari penduduknya.</p>
+            <p>Masyarakat Desa Karangligar kini dapat dengan mudah mengecek informasi diri seperti bantuan, jadwal posyandu, dan informasi penting lainnya. Mari gunakan layanan ini untuk memudahkan Penyebaran Informasi.</p>
           </div>
           <div class="row">
             {% for data in data %}
@@ -106,7 +106,7 @@
                     <img src="../static/assets/images/services-01.jpg" alt="Kegiatan Desa" class="templatemo-feature">
                   </a>
                 </div>
-                <h4><a href="{{ url_for('form_page', id=data.id_tmd) }}">{{ data.judul_tmd }}</a></h4>
+                <h4><a href="{{ url_for('informasi', id=data.id_tmd) }}">{{ data.judul_tmd }}</a></h4>
               </div>
             </div>
             {% endfor %}
@@ -121,9 +121,9 @@
       <div class="row">
         <div class="col-lg-6">
           <div class="section-heading">
-            <h2>Jelajahi <em>Kegiatan</em> &amp; <span>Proyek Desa</span></h2>
+            <h2>Kegiatan  &amp; <em>Informasi</em> <span>Desa Karangligar</span></h2>
             <div class="line-dec"></div>
-            <p>Berikut adalah beberapa kegiatan dan proyek yang telah dilakukan di Desa Karangligar.</p>
+            <p>Berikut adalah beberapa kegiatan dan informasi yang telah dilakukan di Desa Karangligar.</p>
           </div>
         </div>
       </div>
@@ -135,9 +135,9 @@
           <div class="owl-features owl-carousel">
             {% for post in posts %}
             <div class="item">
-              <img src="../uploads/{{ post.gambar_ttp }}" alt="">
+              <img src="{{ url_for('uploaded_post_thumbnail', filename=post['gambar_ttp']) }}" alt="">
               <div class="down-content">
-                <h4>{{ post.judul_ttp }}</h4>
+                <h4>{{ post.nama_tml }} - {{ post.judul_ttp }}</h4>
                 <a href="{{ url_for('blog', id=post.id_ttp) }}"><i class="fa fa-link"></i></a>
               </div>
             </div>
@@ -153,25 +153,25 @@
       <div class="row justify-content-center">
           <div class="col-lg-10">
               <div class="section-heading text-center">
-                  <h2>Cek Informasi <em>Masyarakat</em> &amp; <span>Desa Karangligar</span></h2>
+                  <h2>Form <em>Laporan Online</em> Masyarakat <span>Desa Karangligar</span></h2>
                   <div class="line-dec"></div>
-                  <p>Desa Karangligar adalah sebuah desa yang terletak di wilayah XYZ. Desa ini dikenal dengan berbagai kegiatan masyarakat yang aktif dan kontribusi nyata dari penduduknya.</p>
+                  <p>Masyarakat Desa Karangligar kini dapat memanfaatkan layanan form laporan online yang memudahkan berbagai keperluan administratif. Masyarakat hanya perlu mengisi form yang dibutuhkan dan kemudian datang ke kantor desa untuk mencetaknya. Dengan layanan ini, proses pelaporan menjadi lebih mudah, cepat, dan efisien. Mari manfaatkan layanan ini untuk kenyamanan bersama!</p>
               </div>
               <div class="row">
-                  <!-- Mulai loop data dummy -->
-                  {% for i in range(20) %}
-                  <div class="col-lg-2 col-md-3 col-sm-4 col-6 text-center">
+                  <!-- Mulai loop data laporan -->
+                  {% for laporan in laporan %}
+                  <div class="col-lg-6 col-sm-6 text-center">
                       <div class="service-item">
                           <div class="icon">
-                              <a href="{{ url_for('form_page', id=i+1) }}">
+                              <a href="{{ url_for('form_page', id=laporan.id_tmla) }}">
                                   <img src="../static/assets/images/projects-02.jpg" alt="Kegiatan Desa" class="templatemo-feature">
                               </a>
                           </div>
-                          <h4><a href="{{ url_for('form_page', id=i+1) }}">Judul Informasi {{ i+1 }}</a></h4>
+                          <h4><a href="{{ url_for('form_page', id=laporan.id_tmla) }}">{{ laporan.judul_tmla }}</a></h4>
                       </div>
                   </div>
                   {% endfor %}
-                  <!-- Selesai loop data dummy -->
+                  <!-- Selesai loop data laporan -->
               </div>
           </div>
       </div>

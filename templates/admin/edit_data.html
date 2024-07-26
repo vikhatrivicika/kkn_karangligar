@@ -1,18 +1,31 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Data</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
-    <h1>Edit Data</h1>
-    <form action="" method="post">
-        <label for="judul">Judul :</label>
-        <input type="text" id="judul" name="judul" value="{{ data.judul_tmd }}">
-        <br><br>
-        <label for="keterangan">Description :</label>
-        <input type="text" id="keterangan" name="keterangan" value="{{ data.keterangan_tmd }}">
-        <br><br>
-        <input type="submit" value="Update">
-    </form>
+    <div class="container mt-4">
+        <h2>Edit Data</h2>
+        <hr>
+        <form action="" method="post" class="mb-3">
+            <div class="form-group">
+                <label for="judul">Judul:</label>
+                <input type="text" id="judul" name="judul" class="form-control" value="{{ data.judul_tmd }}">
+            </div>
+            <div class="form-group">
+                <label for="keterangan">Description:</label>
+                <input type="text" id="keterangan" name="keterangan" class="form-control" value="{{ data.keterangan_tmd }}">
+            </div>
+            <button type="submit" class="btn btn-primary">Update</button>
+            <a href="{{ url_for('admin') }}" class="btn btn-secondary">Back</a>
+        </form>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

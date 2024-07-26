@@ -1,15 +1,79 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            display: flex;
+            height: 100vh;
+        }
+        .sidebar {
+            width: 250px;
+            background-color: #343a40;
+            color: white;
+            display: flex;
+            flex-direction: column;
+        }
+        .sidebar a {
+            color: white;
+            padding: 15px;
+            text-decoration: none;
+        }
+        .sidebar a:hover {
+            background-color: #fcfcfc;
+            text-decoration: none;
+        }
+        .content {
+            flex-grow: 1;
+            padding: 20px;
+        }
+    </style>
+    <script>
+        function showContent(id) {
+            var contents = document.getElementsByClassName('content-section');
+            for (var i = 0; i < contents.length; i++) {
+                contents[i].style.display = 'none';
+            }
+            document.getElementById(id).style.display = 'block';
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            showContent('posts'); // Show posts by default
+        });
+    </script>
 </head>
 <body>
-    <h1>Admin Panel</h1>
-    <ul>
-        <li><a href="{{ url_for('admin_posts') }}">Manage Posts</a></li>
-        <li><a href="{{ url_for('admin_labels') }}">Manage Labels</a></li>
-        <li><a href="{{ url_for('admin_data') }}">Manage Data</a></li>
-    </ul>
-    <a href="{{ url_for('logout') }}">Logout</a>
+    <div class="sidebar">
+        <h2 class="text-center mt-4 mb-5">Admin Panel</h2>
+        <a href="#posts" onclick="showContent('posts')">Manage Postingan</a>
+        <a href="#labels" onclick="showContent('labels')">Manage Kategori</a>
+        <a href="#data" onclick="showContent('data')">Manage Data</a>
+        <a href="#laporan" onclick="showContent('laporan')">Manage Laporan</a>
+        <a href="#laporan_masyarakat" onclick="showContent('pdf')">Laporan Masyarakat</a>
+        <a href="{{ url_for('logout') }}">Logout</a>
+    </div>
+    <div class="content">
+        <div id="posts" class="content-section">
+            {% include 'admin/posts.html' %}
+        </div>
+        <div id="labels" class="content-section">
+            {% include 'admin/labels.html' %}
+        </div>
+        <div id="data" class="content-section">
+            {% include 'admin/data.html' %}
+        </div>
+        <div id="laporan" class="content-section">
+            {% include 'admin/laporan.html' %}
+        </div>
+        <div id="pdf" class="content-section">
+            {% include 'admin/laporan_masyarakat.html' %}
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

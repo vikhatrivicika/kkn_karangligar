@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h2 class="text-center">Admin Panel</h2>
+        <!-- Existing content for posts, labels, data, laporan, etc. -->
+        <!-- ... -->
+
+        <h2 class="text-center">Data PDF</h2>
+        <form method="POST" class="mb-4">
+            <div class="form-row">
+                <div class="form-group col-md-4">
+                    <label for="judul_laporan">Jenis Laporan</label>
+                    <select id="judul_laporan" name="judul_laporan" class="form-control">
+                        <option value="">Pilih Jenis Laporan</option>
+                        {% for laporan in judul_laporan_values %}
+                        <option value="{{ laporan.id_tmla }}">{{ laporan.judul_tmla }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="start_date">Tanggal Mulai</label>
+                    <input type="date" id="start_date" name="start_date" class="form-control">
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="end_date">Tanggal Selesai</label>
+                    <input type="date" id="end_date" name="end_date" class="form-control">
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Filter</button>
+        </form>
+        
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>File</th>
+                    <th>Jenis Laporan</th>
+                    <th>Tanggal Dibuat</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for pdf in pdfs %}
+                <tr>
+                    <td>{{ pdf.id_ttp }}</td>
+                    <td>{{ pdf.file_ttp }}</td>
+                    <td>{{ pdf.judul_tmla }}</td>
+                    <td>{{ pdf.created_time_ttp }}</td>
+                    <td><a href="{{ url_for('uploaded_file', filename=pdf.file_ttp) }}" class="btn btn-primary" download>Download PDF</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

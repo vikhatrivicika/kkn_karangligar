@@ -5,33 +5,47 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Post</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <script src="https://cdn.ckeditor.com/4.16.2/standard/ckeditor.js"></script>
 </head>
 <body>
-    <div class="container">
-        <h2>Add New Post</h2>
-        <form method="POST" action="{{ url_for('add_post') }}" enctype="multipart/form-data">
-            <label for="judul_ttp">Title:</label>
-            <input type="text" id="judul_ttp" name="judul_ttp" required>
-            <label for="postingan_ttp">Content:</label>
-            <textarea id="postingan_ttp" name="postingan_ttp" required></textarea>
-            <script>
-                CKEDITOR.replace('postingan_ttp', {
-                    filebrowserUploadUrl: '{{ url_for("upload") }}',
-                    filebrowserUploadMethod: 'form'
-                });
-            </script>
-            <label for="id_tml">Label:</label>
-            <select id="id_tml" name="id_tml" required>
-                <option value="" disabled selected>Select a label</option>
-                {% for label in labels %}
-                    <option value="{{ label.id_tml }}">{{ label.nama_tml }}</option>
-                {% endfor %}
-            </select>
-            <label for="gambar_ttp">Image:</label>
-            <input type="file" id="gambar_ttp" name="gambar_ttp" accept="image/*">
-            <button type="submit">Add Post</button>
+    <div class="container mt-4">
+        <h2>Tambah Postingan</h2>
+        <hr>
+        <form method="POST" action="{{ url_for('add_post') }}" enctype="multipart/form-data" class="mb-3">
+            <div class="form-group">
+                <label for="judul_ttp">Judul :</label>
+                <input type="text" id="judul_ttp" name="judul_ttp" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="postingan_ttp">Konten:</label>
+                <textarea id="postingan_ttp" name="postingan_ttp" class="form-control" required></textarea>
+                <script>
+                    CKEDITOR.replace('postingan_ttp', {
+                        filebrowserUploadUrl: '{{ url_for("upload") }}',
+                        filebrowserUploadMethod: 'form'
+                    });
+                </script>
+            </div>
+            <div class="form-group">
+                <label for="id_tml">Kategori :</label>
+                <select id="id_tml" name="id_tml" class="form-control" required>
+                    <option value="" disabled selected>Select a label</option>
+                    {% for label in labels %}
+                        <option value="{{ label.id_tml }}">{{ label.nama_tml }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="gambar_ttp">Gambar :</label>
+                <input type="file" id="gambar_ttp" name="gambar_ttp" accept="image/*" class="form-control-file">
+            </div>
+            <button type="submit" class="btn btn-primary">Tambah</button>
+            <a href="{{ url_for('admin') }}" class="btn btn-secondary">Back</a>
         </form>
     </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
