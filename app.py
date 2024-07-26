@@ -430,6 +430,11 @@ def uploaded_file(filename):
 def uploaded_post_thumbnail(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER_POST_THUMBNAILS'], filename, as_attachment=True)
 
+@app.route('/uploads/pdf/<filename>')
+def uploaded_post_pdf(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER_HASIL'], filename, as_attachment=True)
+
+
 @app.route('/admin/update_active/<int:id>', methods=['POST'])
 def update_active(id):
     if check_session_timeout() and 'loggedin' in session:
@@ -687,6 +692,66 @@ def admin_tbl_t_pdf():
             judul_laporan_values = cursor.fetchall()
             
             return render_template('admin/laporan_masyarakat.html', pdfs=pdfs, judul_laporan_values=judul_laporan_values)
+    return redirect(url_for('login'))
+
+@app.route('/admin/edit_pdf/<int:id>', methods=['GET', 'POST'])
+def edit_pdf(id):
+    if check_session_timeout() and 'loggedin' in session:
+        db = get_db_connection()
+        if db:
+            cursor = db.cursor(dictionary=True)
+            if request.method == 'POST':
+                json_data = json.loads(request.form['json_data'])
+
+                cursor.execute("UPDATE tbl_t_pdf SET json_ttp = %s WHERE id_ttp = %s", (json.dumps(json_data), id))
+                db.commit()
+                return redirect(url_for('admin_tbl_t_pdf'))
+
+            cursor.execute("""
+                SELECT pdf.id_ttp, pdf.json_ttp, pdf.id_tmla
+                FROM tbl_t_pdf pdf 
+                JOIN tbl_m_laporan laporan ON pdf.id_tmla = laporan.id_tmla 
+                WHERE pdf.id_ttp = %s
+            """, (id,))
+            pdf = cursor.fetchone()
+
+            cursor.execute("SELECT detail_json_tms FROM tbl_m_struktur WHERE id_tmla = %s", (pdf['id_tmla'],))
+            struktur = cursor.fetchone()
+            detail_json = json.loads(struktur['detail_json_tms']) if struktur else []
+
+            return render_template('admin/edit_pdf.html', pdf=pdf, detail_json=pdf['json_ttp'], structure=detail_json)
+        return "Database connection error"
+    return redirect(url_for('login'))
+
+@app.route('/admin/change_password', methods=['GET', 'POST'])
+def change_password():
+    if check_session_timeout() and 'loggedin' in session:
+        if request.method == 'POST':
+            current_password = request.form['current_password']
+            new_password = request.form['new_password']
+            confirm_password = request.form['confirm_password']
+            
+            if new_password != confirm_password:
+                flash('New passwords do not match!', 'danger')
+                return redirect(url_for('change_password'))
+            
+            db = get_db_connection()
+            if db:
+                cursor = db.cursor(dictionary=True)
+                user_id = session['id_tmu']
+                cursor.execute("SELECT password_tmu FROM tbl_m_users WHERE id_tmu = %s", (user_id,))
+                user = cursor.fetchone()
+                
+                hashed_current_password = hashlib.md5(current_password.encode()).hexdigest()
+                if user and user['password_tmu'] == hashed_current_password:
+                    hashed_new_password = hashlib.md5(new_password.encode()).hexdigest()
+                    cursor.execute("UPDATE tbl_m_users SET password_tmu = %s WHERE id_tmu = %s", (hashed_new_password, user_id))
+                    db.commit()
+                    flash('Password changed successfully!', 'success')
+                    return redirect(url_for('login'))
+                else:
+                    flash('Current password is incorrect!', 'danger')
+        return render_template('admin/change_password.html')
     return redirect(url_for('login'))
 
 

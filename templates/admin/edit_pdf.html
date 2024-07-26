@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Informasi PDF</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <h2 class="text-center mt-4">Edit Informasi PDF</h2>
+                <form method="POST" class="form-container">
+                    <div id="fieldsContainer">
+                        <!-- Fields will be added here by JavaScript -->
+                    </div>
+                    <input type="hidden" id="json_data" name="json_data">
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                    <a href="{{ url_for('admin') }}" class="btn btn-secondary">Cancel</a>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const structure = {{ structure | safe }};
+        const existingData = {{ detail_json | safe }};
+
+        function createField(field, data) {
+            const container = document.createElement('div');
+            container.classList.add('form-group');
+            
+            const label = document.createElement('label');
+            label.setAttribute('for', field.name);
+            label.textContent = field.label;
+            container.appendChild(label);
+            
+            if (field.type === 'text') {
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.classList.add('form-control');
+                input.id = field.name;
+                input.name = field.name;
+                input.maxLength = field.max_length || '';
+                input.value = data[field.name] || '';
+                container.appendChild(input);
+            } else if (field.type === 'select') {
+                const select = document.createElement('select');
+                select.classList.add('form-control');
+                select.id = field.name;
+                select.name = field.name;
+
+                field.options.forEach(option => {
+                    const opt = document.createElement('option');
+                    opt.value = option.value;
+                    opt.textContent = option.label;
+                    if (data[field.name] === option.value) {
+                        opt.selected = true;
+                    }
+                    select.appendChild(opt);
+                });
+
+                container.appendChild(select);
+            }
+
+            return container;
+        }
+
+        function renderFields() {
+            const fieldsContainer = document.getElementById('fieldsContainer');
+            structure.forEach(field => {
+                const fieldElement = createField(field, existingData);
+                fieldsContainer.appendChild(fieldElement);
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            renderFields();
+
+            document.querySelector('form').addEventListener('submit', function(event) {
+                event.preventDefault();
+                const formData = {};
+                structure.forEach(field => {
+                    formData[field.name] = document.getElementById(field.name).value;
+                });
+                document.getElementById('json_data').value = JSON.stringify(formData);
+                event.target.submit();
+            });
+        });
+    </script>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+
+</html>

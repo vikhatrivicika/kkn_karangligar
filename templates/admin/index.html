@@ -38,10 +38,12 @@
                 contents[i].style.display = 'none';
             }
             document.getElementById(id).style.display = 'block';
+            localStorage.setItem('lastViewedSection', id);  // Simpan status terakhir ke localStorage
         }
 
         document.addEventListener('DOMContentLoaded', function() {
-            showContent('posts'); // Show posts by default
+            var lastViewedSection = localStorage.getItem('lastViewedSection') || 'posts'; // Ambil status terakhir atau default ke 'posts'
+            showContent(lastViewedSection);
         });
     </script>
 </head>
@@ -53,6 +55,7 @@
         <a href="#data" onclick="showContent('data')">Manage Data</a>
         <a href="#laporan" onclick="showContent('laporan')">Manage Laporan</a>
         <a href="#laporan_masyarakat" onclick="showContent('pdf')">Laporan Masyarakat</a>
+        <a href="#change_password" onclick="showContent('change_password')">Change Password</a> <!-- Tautan baru untuk ganti password -->
         <a href="{{ url_for('logout') }}">Logout</a>
     </div>
     <div class="content">
@@ -70,6 +73,9 @@
         </div>
         <div id="pdf" class="content-section">
             {% include 'admin/laporan_masyarakat.html' %}
+        </div>
+        <div id="change_password" class="content-section">
+            {% include 'admin/change_password.html' %} <!-- Menambahkan include halaman ganti password -->
         </div>
     </div>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
