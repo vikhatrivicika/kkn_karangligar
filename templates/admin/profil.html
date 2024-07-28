@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Admin Profile Management</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+
+    <h2 class="mt-4">Profil Desa</h2>
+    <hr>
+    {% for p in profil %}
+        <form method="POST" action="{{ url_for('admin') }}" class="needs-validation" novalidate enctype="multipart/form-data">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="informasi_tmpo">Informasi</label>
+                        <textarea class="form-control" id="informasi_tmpo" name="informasi_tmpo" rows="3" required>{{ p.informasi_tmpo }}</textarea>
+                        <div class="invalid-feedback">Please enter the informasi.</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="facebook_tmpo">Facebook</label>
+                        <input type="text" class="form-control" id="facebook_tmpo" name="facebook_tmpo" value="{{ p.facebook_tmpo }}" required>
+                        <div class="invalid-feedback">Please enter the Facebook link.</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="instagram_tmpo">Instagram</label>
+                        <input type="text" class="form-control" id="instagram_tmpo" name="instagram_tmpo" value="{{ p.instagram_tmpo }}" required>
+                        <div class="invalid-feedback">Please enter the Instagram link.</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="visi_tmpo">Visi</label>
+                        <textarea class="form-control" id="visi_tmpo" name="visi_tmpo" rows="3" required>{{ p.visi_tmpo }}</textarea>
+                        <div class="invalid-feedback">Please enter the visi.</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="misi_tmpo">Misi</label>
+                        <textarea class="form-control" id="misi_tmpo" name="misi_tmpo" rows="3" required>{{ p.misi_tmpo }}</textarea>
+                        <div class="invalid-feedback">Please enter the misi.</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="kepala_desa_foto">Foto Kepala Desa</label>
+                        <input type="file" class="form-control-file" id="kepala_desa_foto" name="kepala_desa_foto">
+                        <div class="invalid-feedback">Please upload the kepala desa foto.</div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="kepala_desa_nama">Nama Kepala Desa</label>
+                        <input type="text" class="form-control" id="kepala_desa_nama" name="kepala_desa_nama" value="{{ p.kepala_desa_tmpo['nama'] }}" required>
+                        <div class="invalid-feedback">Please enter the kepala desa nama.</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="kepala_desa_jabatan">Jabatan Kepala Desa</label>
+                        <input type="text" class="form-control" id="kepala_desa_jabatan" name="kepala_desa_jabatan" value="{{ p.kepala_desa_tmpo['jabatan'] }}" required>
+                        <div class="invalid-feedback">Please enter the kepala desa jabatan.</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="kantor_kode_pos">Kode Pos Kantor</label>
+                        <input type="text" class="form-control" id="kantor_kode_pos" name="kantor_kode_pos" value="{{ p.kantor_tmpo['kode_pos'] }}" required>
+                        <div class="invalid-feedback">Please enter the kode pos kantor.</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="kantor_alamat">Alamat Kantor</label>
+                        <textarea class="form-control" id="kantor_alamat" name="kantor_alamat" rows="3" required>{{ p.kantor_tmpo['alamat'] }}</textarea>
+                        <div class="invalid-feedback">Please enter the alamat kantor.</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="kantor_notelepon">No Telepon Kantor</label>
+                        <input type="text" class="form-control" id="kantor_notelepon" name="kantor_notelepon" value="{{ p.kantor_tmpo['notelepon'] }}" required>
+                        <div class="invalid-feedback">Please enter the no telepon kantor.</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="kantor_email">Email Kantor</label>
+                        <input type="email" class="form-control" id="kantor_email" name="kantor_email" value="{{ p.kantor_tmpo['email'] }}" required>
+                        <div class="invalid-feedback">Please enter a valid email address.</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="struktur_tmpo">Struktur</label>
+                        <input type="file" class="form-control-file" id="struktur_tmpo" name="struktur_tmpo">
+                        <div class="invalid-feedback">Please upload the struktur file.</div>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Update Profile</button>
+        </form>
+    {% endfor %}
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

@@ -12,14 +12,15 @@
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-lg-8">
-                <h2 class="text-center mt-4">Edit Informasi PDF</h2>
+                <h2 class="mt-4">Edit Label</h2>
+                <hr>
                 <form method="POST" class="form-container">
                     <div id="fieldsContainer">
                         <!-- Fields will be added here by JavaScript -->
                     </div>
                     <input type="hidden" id="json_data" name="json_data">
                     <button type="submit" class="btn btn-primary">Save Changes</button>
-                    <a href="{{ url_for('admin') }}" class="btn btn-secondary">Cancel</a>
+                    <a href="{{ url_for('admin') }}" class="btn btn-secondary">Back</a>
                 </form>
             </div>
         </div>

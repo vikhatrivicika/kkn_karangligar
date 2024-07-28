@@ -18,18 +18,21 @@ UPLOAD_FOLDER_TEMPLATES = os.path.join(BASE_UPLOAD_FOLDER, 'templates')
 UPLOAD_FOLDER_HASIL = os.path.join(BASE_UPLOAD_FOLDER, 'hasil')
 UPLOAD_FOLDER_DATA = os.path.join(BASE_UPLOAD_FOLDER, 'data')
 UPLOAD_FOLDER_POST_THUMBNAILS = os.path.join(BASE_UPLOAD_FOLDER, 'post_thumbnails')
+UPLOAD_FOLDER_PROFIL = os.path.join(BASE_UPLOAD_FOLDER, 'profil')
 
 # Create directories if they do not exist
 os.makedirs(UPLOAD_FOLDER_TEMPLATES, exist_ok=True)
 os.makedirs(UPLOAD_FOLDER_HASIL, exist_ok=True)
 os.makedirs(UPLOAD_FOLDER_DATA, exist_ok=True)
 os.makedirs(UPLOAD_FOLDER_POST_THUMBNAILS, exist_ok=True)
+os.makedirs(UPLOAD_FOLDER_PROFIL, exist_ok=True)
 
 app.config['UPLOAD_FOLDER'] = BASE_UPLOAD_FOLDER
 app.config['UPLOAD_FOLDER_TEMPLATES'] = UPLOAD_FOLDER_TEMPLATES
 app.config['UPLOAD_FOLDER_HASIL'] = UPLOAD_FOLDER_HASIL
 app.config['UPLOAD_FOLDER_DATA'] = UPLOAD_FOLDER_DATA
 app.config['UPLOAD_FOLDER_POST_THUMBNAILS'] = UPLOAD_FOLDER_POST_THUMBNAILS
+app.config['UPLOAD_FOLDER_PROFIL'] = UPLOAD_FOLDER_PROFIL
 
 # Database connection
 def get_db_connection():
@@ -73,11 +76,18 @@ def index():
         data = cursor.fetchall()
         cursor.execute("SELECT * FROM tbl_m_laporan WHERE active_tmla = '1' AND delected_tmla IS NULL")
         laporan = cursor.fetchall()
+        cursor.execute("SELECT * FROM tbl_m_profil")
+        profile = cursor.fetchone()
 
-        print(laporan)
-        
-        return render_template('index.html', posts=posts, data=data, laporan=laporan)
+        if profile:
+            profile['kepala_desa_tmpo'] = json.loads(profile['kepala_desa_tmpo'])
+            profile['kantor_tmpo'] = json.loads(profile['kantor_tmpo'])
+
+        print(profile)
+
+        return render_template('index.html', posts=posts, data=data, laporan=laporan, profil=profile)
     return "Database connection error"
+
 
 @app.route('/form_page/<int:id>', methods=['GET', 'POST'])
 def form_page(id):
@@ -116,7 +126,9 @@ def form_page(id):
 
             # Generate PDF
             pdf_id = cursor.lastrowid
-            pdf_path = generate_pdf_from_data(pdf_id, pdf_template_path)
+            output_folder = app.config['UPLOAD_FOLDER_HASIL']
+            new_filename = f"{nama_surat}_{pdf_id}.pdf"
+            pdf_path = generate_pdf_from_data(pdf_id, pdf_template_path, output_folder, new_filename)
 
             # Update tbl_t_pdf with file path
             filename = os.path.basename(pdf_path)
@@ -127,6 +139,7 @@ def form_page(id):
 
         return render_template('form_page.html', fields=fields, nama_surat=nama_surat)
     return "Database connection error"
+
 
 @app.route('/blog/<int:id>')
 def blog(id):
@@ -186,15 +199,15 @@ def admin():
         db = get_db_connection()
         if db:
             cursor = db.cursor(dictionary=True)
-
-            # Handle post data submission
             if request.method == 'POST':
                 if 'label_name' in request.form:
+                    # Handle label submission
                     label_name = request.form['label_name']
                     cursor.execute("INSERT INTO tbl_m_label (nama_tml, created_tml) VALUES (%s, %s)", (label_name, session['id_tmu']))
                     db.commit()
                     return redirect(url_for('admin'))
                 elif 'file' in request.files:
+                    # Handle file upload
                     file = request.files['file']
                     keterangan = request.form['keterangan']
                     judul = request.form['judul']
@@ -205,8 +218,71 @@ def admin():
                                    (filename, judul, keterangan, '1', int(time.time())))
                     db.commit()
                     return redirect(url_for('admin'))
+                elif 'informasi_tmpo' in request.form:
+                    # Handle profile update
+                    informasi = request.form['informasi_tmpo']
+                    facebook = request.form['facebook_tmpo']
+                    instagram = request.form['instagram_tmpo']
+                    visi = request.form['visi_tmpo']
+                    misi = request.form['misi_tmpo']
+                    
+                    kepala_desa = {}
+                    kepala_desa['nama'] = request.form['kepala_desa_nama']
+                    kepala_desa['jabatan'] = request.form['kepala_desa_jabatan']
+                    
+                    if 'kepala_desa_foto' in request.files:
+                        file = request.files['kepala_desa_foto']
+                        if file and file.filename != '':
+                            filename = file.filename
+                            filepath = os.path.join(app.config['UPLOAD_FOLDER_PROFIL'], filename)
+                            file.save(filepath)
+                            kepala_desa['foto'] = filename
+                        else:
+                            cursor.execute("SELECT kepala_desa_tmpo FROM tbl_m_profil WHERE id_tmpo=1")
+                            current_data = cursor.fetchone()
+                            if current_data:
+                                current_kepala_desa = json.loads(current_data['kepala_desa_tmpo'])
+                                kepala_desa['foto'] = current_kepala_desa.get('foto', '')
+
+                    kepala_desa_json = json.dumps(kepala_desa)
+                    
+                    kantor = json.dumps({
+                        "kode_pos": request.form['kantor_kode_pos'],
+                        "alamat": request.form['kantor_alamat'],
+                        "notelepon": request.form['kantor_notelepon'],
+                        "email": request.form['kantor_email']
+                    })
+                    
+                    if 'struktur_tmpo' in request.files:
+                        file = request.files['struktur_tmpo']
+                        if file and file.filename != '':
+                            struktur_filename = file.filename
+                            struktur_filepath = os.path.join(app.config['UPLOAD_FOLDER_PROFIL'], struktur_filename)
+                            file.save(struktur_filepath)
+                            struktur = struktur_filename
+                        else:
+                            cursor.execute("SELECT struktur_tmpo FROM tbl_m_profil WHERE id_tmpo=1")
+                            current_data = cursor.fetchone()
+                            if current_data:
+                                struktur = current_data.get('struktur_tmpo', '')
+
+                    cursor.execute("""
+                        UPDATE tbl_m_profil SET 
+                            informasi_tmpo=%s, 
+                            facebook_tmpo=%s, 
+                            instagram_tmpo=%s, 
+                            visi_tmpo=%s, 
+                            misi_tmpo=%s, 
+                            kepala_desa_tmpo=%s, 
+                            struktur_tmpo=%s, 
+                            kantor_tmpo=%s 
+                        WHERE id_tmpo=1
+                    """, (informasi, facebook, instagram, visi, misi, kepala_desa_json, struktur, kantor))
+                    db.commit()
+                    flash('Profil berhasil diperbarui!', 'success')
+                    return redirect(url_for('admin'))
                 else:
-                    # Default query to fetch all data
+                    # Handle filtering for PDFs
                     query = """
                         SELECT pdf.id_ttp, pdf.file_ttp, laporan.judul_tmla, pdf.created_time_ttp
                         FROM tbl_t_pdf pdf 
@@ -227,7 +303,6 @@ def admin():
 
                     cursor.execute(query)
                     pdfs = cursor.fetchall()
-
             else:
                 # Default query to fetch all data
                 query = """
@@ -258,9 +333,17 @@ def admin():
             cursor.execute("SELECT * FROM tbl_m_laporan WHERE delected_tmla IS NULL")
             laporan = cursor.fetchall()
 
-            return render_template('admin/index.html', posts=posts, labels=labels, data=data, laporan=laporan, pdfs=pdfs, judul_laporan_values=judul_laporan_values)
+            # Fetch profile
+            cursor.execute("SELECT * FROM tbl_m_profil WHERE id_tmpo=1")
+            profil = cursor.fetchall()  # Fetch as list of dictionaries
+            if profil:
+                profil[0]['kepala_desa_tmpo'] = json.loads(profil[0]['kepala_desa_tmpo'])
+                profil[0]['kantor_tmpo'] = json.loads(profil[0]['kantor_tmpo'])
+
+            return render_template('admin/index.html', posts=posts, labels=labels, data=data, laporan=laporan, pdfs=pdfs, judul_laporan_values=judul_laporan_values, profil=profil)
         return "Database connection error"
     return redirect(url_for('login'))
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -433,6 +516,10 @@ def uploaded_post_thumbnail(filename):
 @app.route('/uploads/pdf/<filename>')
 def uploaded_post_pdf(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER_HASIL'], filename, as_attachment=True)
+
+@app.route('/uploads/profil/<filename>')
+def uploaded_profil(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER_PROFIL'], filename, as_attachment=True)
 
 
 @app.route('/admin/update_active/<int:id>', methods=['POST'])
@@ -616,7 +703,7 @@ def save_detail_laporan():
         return jsonify(success=False, error="Database connection error")
     return jsonify(success=False, error="Tidak terautentikasi")
 
-def generate_pdf_from_data(pdf_id, pdf_template_path):
+def generate_pdf_from_data(pdf_id, template_path, output_folder, new_filename):
     db = get_db_connection()
     if db:
         cursor = db.cursor(dictionary=True)
@@ -631,29 +718,41 @@ def generate_pdf_from_data(pdf_id, pdf_template_path):
             struktur = json.loads(struktur_data['detail_json_tms'])
 
             # Open the PDF template
-            doc = fitz.open(pdf_template_path)
+            doc = fitz.open(template_path)
             page = doc[0]  # Use the first page of the template
 
             for field in struktur:
+                x_points = field.get('position', {}).get('x', 0)
+                y_points = field.get('position', {}).get('y', 0)
+                text = form_data.get(field['name'], '')
+                fontsize = field.get('font_size', 12)
+
+                # Ensure numerical values are correctly typed
+                try:
+                    x_points = float(x_points)
+                    y_points = float(y_points)
+                    fontsize = float(fontsize)
+                except ValueError as e:
+                    print(f"ValueError: {e}")
+                    continue
+
                 if field['type'] == 'text':
-                    x = field.get('position', {}).get('x', 50)
-                    y = field.get('position', {}).get('y', 50)
-                    text = form_data.get(field['name'], '')
-                    page.insert_text((x, y), text, fontname='helv', fontsize=12)
+                    page.insert_text((x_points, y_points), text, fontname='helv', fontsize=fontsize)
                 elif field['type'] == 'select':
-                    x = field.get('position', {}).get('x', 50)
-                    y = field.get('position', {}).get('y', 50)
-                    text = form_data.get(field['name'], '')
-                    page.insert_text((x, y), text, fontname='helv', fontsize=12)
+                    # Insert selected option's label text
+                    for option in field['options']:
+                        if option['value'] == text:
+                            page.insert_text((x_points, y_points), option['label'], fontname='helv', fontsize=fontsize)
+                            break
 
             # Save the filled PDF to a new file
-            pdf_path = os.path.join(app.config['UPLOAD_FOLDER_HASIL'], f"{pdf_id}.pdf")
-            doc.save(pdf_path)
+            new_pdf_path = os.path.join(output_folder, new_filename)
+            doc.save(new_pdf_path)
 
-            pdf = f"{pdf_id}.pdf"
-            return pdf
+            return new_pdf_path
 
     return None
+
 
 @app.route('/admin/tbl_t_pdf', methods=['GET', 'POST'])
 def admin_tbl_t_pdf():
@@ -703,9 +802,34 @@ def edit_pdf(id):
             if request.method == 'POST':
                 json_data = json.loads(request.form['json_data'])
 
+                # Update JSON data in the database
                 cursor.execute("UPDATE tbl_t_pdf SET json_ttp = %s WHERE id_ttp = %s", (json.dumps(json_data), id))
                 db.commit()
-                return redirect(url_for('admin_tbl_t_pdf'))
+
+                # Fetch the existing PDF template information from tbl_t_pdf
+                cursor.execute("SELECT id_tmla, file_ttp FROM tbl_t_pdf WHERE id_ttp = %s", (id,))
+                pdf_record = cursor.fetchone()
+
+                # Fetch the template file from tbl_m_laporan
+                cursor.execute("SELECT file_tmla FROM tbl_m_laporan WHERE id_tmla = %s", (pdf_record['id_tmla'],))
+                laporan_record = cursor.fetchone()
+                template_path = os.path.join(app.config['UPLOAD_FOLDER_TEMPLATES'], laporan_record['file_tmla'])
+
+                # Generate a new filename
+                timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+                base_filename, file_extension = os.path.splitext(pdf_record['file_ttp'])
+                new_filename = f"{base_filename}-edit-{timestamp}{file_extension}"
+
+
+                # Generate the updated PDF from the template and save it with the new filename
+                new_pdf_path = generate_pdf_from_data(id, template_path, app.config['UPLOAD_FOLDER_HASIL'], new_filename)
+
+                # Update the file name in the database if the PDF generation was successful
+                if new_pdf_path:
+                    cursor.execute("UPDATE tbl_t_pdf SET file_ttp = %s WHERE id_ttp = %s", (new_filename, id))
+                    db.commit()
+
+                return redirect(url_for('admin'))
 
             cursor.execute("""
                 SELECT pdf.id_ttp, pdf.json_ttp, pdf.id_tmla
@@ -722,6 +846,7 @@ def edit_pdf(id):
             return render_template('admin/edit_pdf.html', pdf=pdf, detail_json=pdf['json_ttp'], structure=detail_json)
         return "Database connection error"
     return redirect(url_for('login'))
+
 
 @app.route('/admin/change_password', methods=['GET', 'POST'])
 def change_password():
@@ -753,6 +878,100 @@ def change_password():
                     flash('Current password is incorrect!', 'danger')
         return render_template('admin/change_password.html')
     return redirect(url_for('login'))
+
+
+# @app.route('/admin/profil', methods=['GET', 'POST'])
+# def admin_profil():
+    if check_session_timeout() and 'loggedin' in session:
+        db = get_db_connection()
+        if db:
+            cursor = db.cursor(dictionary=True)
+            if request.method == 'POST':
+                informasi = request.form['informasi_tmpo']
+                facebook = request.form['facebook_tmpo']
+                instagram = request.form['instagram_tmpo']
+                visi = request.form['visi_tmpo']
+                misi = request.form['misi_tmpo']
+                
+                kepala_desa = {}
+                kepala_desa['nama'] = request.form['kepala_desa_nama']
+                kepala_desa['jabatan'] = request.form['kepala_desa_jabatan']
+                
+                if 'kepala_desa_foto' in request.files:
+                    file = request.files['kepala_desa_foto']
+                    if file and file.filename != '':
+                        filename = file.filename
+                        filepath = os.path.join(app.config['UPLOAD_FOLDER_PROFIL'], filename)
+                        file.save(filepath)
+                        kepala_desa['foto'] = filename
+                    else:
+                        cursor.execute("SELECT kepala_desa_tmpo FROM tbl_m_profil WHERE id_tmpo=1")
+                        current_data = cursor.fetchone()
+                        if current_data:
+                            current_kepala_desa = json.loads(current_data['kepala_desa_tmpo'])
+                            kepala_desa['foto'] = current_kepala_desa.get('foto', '')
+
+                kepala_desa_json = json.dumps(kepala_desa)
+                
+                kantor = json.dumps({
+                    "kode_pos": request.form['kantor_kode_pos'],
+                    "alamat": request.form['kantor_alamat'],
+                    "notelepon": request.form['kantor_notelepon'],
+                    "email": request.form['kantor_email']
+                })
+                
+                if 'struktur_tmpo' in request.files:
+                    file = request.files['struktur_tmpo']
+                    if file and file.filename != '':
+                        struktur_filename = file.filename
+                        struktur_filepath = os.path.join(app.config['UPLOAD_FOLDER_PROFIL'], struktur_filename)
+                        file.save(struktur_filepath)
+                        struktur = struktur_filename
+                    else:
+                        cursor.execute("SELECT struktur_tmpo FROM tbl_m_profil WHERE id_tmpo=1")
+                        current_data = cursor.fetchone()
+                        if current_data:
+                            struktur = current_data.get('struktur_tmpo', '')
+
+                cursor.execute("""
+                    UPDATE tbl_m_profil SET 
+                        informasi_tmpo=%s, 
+                        facebook_tmpo=%s, 
+                        instagram_tmpo=%s, 
+                        visi_tmpo=%s, 
+                        misi_tmpo=%s, 
+                        kepala_desa_tmpo=%s, 
+                        struktur_tmpo=%s, 
+                        kantor_tmpo=%s 
+                    WHERE id_tmpo=1
+                """, (informasi, facebook, instagram, visi, misi, kepala_desa_json, struktur, kantor))
+                db.commit()
+                flash('Profil berhasil diperbarui!', 'success')
+                return redirect(url_for('admin_profil'))
+
+            cursor.execute("SELECT * FROM tbl_m_profil WHERE id_tmpo=1")
+            profil = cursor.fetchall()  # Fetch as list of dictionaries
+            if profil:
+                profil[0]['kepala_desa_tmpo'] = json.loads(profil[0]['kepala_desa_tmpo'])
+                profil[0]['kantor_tmpo'] = json.loads(profil[0]['kantor_tmpo'])
+
+            return render_template('admin/profil.html', profil=profil)
+    return redirect(url_for('login'))
+
+@app.route('/profil_desa')
+def profil_desa():
+    db = get_db_connection()
+    if db:
+        cursor = db.cursor(dictionary=True)
+        cursor.execute("SELECT * FROM tbl_m_profil WHERE id_tmpo=1")
+        profile = cursor.fetchone()
+
+        if profile:
+            profile['kepala_desa_tmpo'] = json.loads(profile['kepala_desa_tmpo'])
+            profile['kantor_tmpo'] = json.loads(profile['kantor_tmpo'])
+
+        return render_template('profil_desa.html', profil=profile)
+    return "Database connection error"
 
 
 if __name__ == '__main__':

@@ -6,32 +6,49 @@
     <title>Detail Laporan</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .field, .option {
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-bottom: 10px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+        }
+        .field .remove-field, .option .remove-option {
+            margin-top: 10px;
+        }
+        .field .optionsContainer {
+            margin-top: 10px;
+        }
+        .optionsFields .option {
+            margin-top: 10px;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
         <h1 class="mt-4">Detail Laporan</h1>
-        <form id="detailLaporanForm">
+        <form id="detailLaporanForm" class="mb-4">
             <input type="hidden" id="id_tmla" name="id_tmla" value="{{ id_tmla }}">
             <div id="fieldsContainer"></div>
-            <button type="button" onclick="addField()">Add Field</button>
-            <button type="submit">{{ 'Update' if is_update else 'Save' }}</button>
+            <div class="form-group mt-3">
+                <button type="button" class="btn btn-warning" onclick="addField()">Add Field</button>
+                <button type="submit" class="btn btn-primary">{{ 'Update' if is_update else 'Save' }}</button>
+                <a href="{{ url_for('admin') }}" class="btn btn-secondary">Back</a>
+            </div>
         </form>
     </div>
     
     <script>
         const existingData = {{ detail_json | safe }};
-
-        console.log(existingData);
-
+        
         document.addEventListener('DOMContentLoaded', function() {
-            // Check if existingData is an array before using forEach
             if (Array.isArray(existingData) && existingData.length > 0) {
                 existingData.forEach(field => addField(field));
             } else {
                 addField();
             }
 
-            // Initialize fields visibility based on their type
             const typeSelects = document.querySelectorAll('select[name="types[]"]');
             typeSelects.forEach(selectElement => {
                 toggleOptions(selectElement);
@@ -43,52 +60,87 @@
             const newField = document.createElement('div');
             newField.classList.add('field');
             newField.innerHTML = `
-                <label>Label:</label>
-                <input type="text" name="labels[]" value="${fieldData.label || ''}">
-                <label>Type:</label>
-                <select name="types[]" onchange="toggleOptions(this)">
-                    <option value="text" ${fieldData.type === 'text' ? 'selected' : ''}>Text</option>
-                    <option value="select" ${fieldData.type === 'select' ? 'selected' : ''}>Select</option>
-                </select>
-                <div class="field-attributes" style="display: ${fieldData.type === 'select' ? 'none' : 'block'};">
-                    <label class="max-length-label">Max Length:</label>
-                    <input type="number" name="max_lengths[]" class="max-length-input" value="${fieldData.max_length || ''}">
-                    <label>Font:</label>
-                    <input type="text" name="fonts[]" value="${fieldData.font || ''}">
-                    <label>Font Size:</label>
-                    <input type="number" name="font_sizes[]" value="${fieldData.font_size || ''}">
-                    <label>Position X:</label>
-                    <input type="number" name="positions_x[]" value="${fieldData.position ? fieldData.position.x : ''}">
-                    <label>Position Y:</label>
-                    <input type="number" name="positions_y[]" value="${fieldData.position ? fieldData.position.y : ''}">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Label:</label>
+                            <input type="text" class="form-control" name="labels[]" value="${fieldData.label || ''}">
+                        </div>
+                        <div class="form-group">
+                            <label>Type:</label>
+                            <select class="form-control" name="types[]" onchange="toggleOptions(this)">
+                                <option value="text" ${fieldData.type === 'text' ? 'selected' : ''}>Text</option>
+                                <option value="select" ${fieldData.type === 'select' ? 'selected' : ''}>Select</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Max Length:</label>
+                            <input type="number" class="form-control" name="max_lengths[]" value="${fieldData.max_length || ''}">
+                        </div>
+                        <div class="form-group">
+                            <label>Font:</label>
+                            <input type="text" class="form-control" name="fonts[]" value="${fieldData.font || ''}">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Font Size:</label>
+                            <input type="number" class="form-control" name="font_sizes[]" value="${fieldData.font_size || ''}">
+                        </div>
+                        <div class="form-group">
+                            <label>Position X:</label>
+                            <input type="number" class="form-control" name="positions_x[]" value="${fieldData.position ? fieldData.position.x : ''}">
+                        </div>
+                        <div class="form-group">
+                            <label>Position Y:</label>
+                            <input type="number" class="form-control" name="positions_y[]" value="${fieldData.position ? fieldData.position.y : ''}">
+                        </div>
+                    </div>
                 </div>
                 <div class="optionsContainer" style="display: ${fieldData.type === 'select' ? 'block' : 'none'};">
                     <label>Options:</label>
                     <div class="optionsFields">
                         ${(fieldData.options || []).map(option => `
-                            <div class="option">
-                                <label>Option Value:</label>
-                                <input type="text" name="option_values[]" value="${option.label || ''}">
-                                <label>Font:</label>
-                                <input type="text" name="option_fonts[]" value="${option.font || ''}">
-                                <label>Font Size:</label>
-                                <input type="number" name="option_font_sizes[]" value="${option.font_size || ''}">
-                                <label>Position X:</label>
-                                <input type="number" name="option_positions_x[]" value="${option.position ? option.position.x : ''}">
-                                <label>Position Y:</label>
-                                <input type="number" name="option_positions_y[]" value="${option.position ? option.position.y : ''}">
-                                <button type="button" onclick="removeOption(this)">Remove Option</button>
+                            <div class="option row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Option Value:</label>
+                                        <input type="text" class="form-control" name="option_values[]" value="${option.label || ''}">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Font:</label>
+                                        <input type="text" class="form-control" name="option_fonts[]" value="${option.font || ''}">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Font Size:</label>
+                                        <input type="number" class="form-control" name="option_font_sizes[]" value="${option.font_size || ''}">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Position X:</label>
+                                        <input type="number" class="form-control" name="option_positions_x[]" value="${option.position ? option.position.x : ''}">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Position Y:</label>
+                                        <input type="number" class="form-control" name="option_positions_y[]" value="${option.position ? option.position.y : ''}">
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <button type="button" class="btn btn-danger remove-option" onclick="removeOption(this)">Remove Option</button>
+                                </div>
                             </div>
                         `).join('')}
                     </div>
-                    <button type="button" onclick="addOption(this)">Add Option</button>
+                    <button type="button" class="btn btn-secondary mt-2" onclick="addOption(this)">Add Option</button>
                 </div>
+                <button type="button" class="btn btn-danger remove-field mt-3" onclick="removeField(this)">Remove Field</button>
             `;
             container.appendChild(newField);
         }
 
         function toggleOptions(selectElement) {
-            const field = selectElement.parentNode;
+            const field = selectElement.closest('.field');
             const fieldAttributes = field.querySelector('.field-attributes');
             const optionsContainer = field.querySelector('.optionsContainer');
             if (selectElement.value === 'select') {
@@ -101,27 +153,47 @@
         }
 
         function addOption(button) {
-            const optionsFields = button.parentNode.querySelector('.optionsFields');
+            const optionsFields = button.closest('.optionsContainer').querySelector('.optionsFields');
             const newOption = document.createElement('div');
-            newOption.classList.add('option');
+            newOption.classList.add('option', 'row');
             newOption.innerHTML = `
-                <label>Option Value:</label>
-                <input type="text" name="option_values[]">
-                <label>Font:</label>
-                <input type="text" name="option_fonts[]">
-                <label>Font Size:</label>
-                <input type="number" name="option_font_sizes[]">
-                <label>Position X:</label>
-                <input type="number" name="option_positions_x[]">
-                <label>Position Y:</label>
-                <input type="number" name="option_positions_y[]">
-                <button type="button" onclick="removeOption(this)">Remove Option</button>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Option Value:</label>
+                        <input type="text" class="form-control" name="option_values[]">
+                    </div>
+                    <div class="form-group">
+                        <label>Font:</label>
+                        <input type="text" class="form-control" name="option_fonts[]">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Font Size:</label>
+                        <input type="number" class="form-control" name="option_font_sizes[]">
+                    </div>
+                    <div class="form-group">
+                        <label>Position X:</label>
+                        <input type="number" class="form-control" name="option_positions_x[]">
+                    </div>
+                    <div class="form-group">
+                        <label>Position Y:</label>
+                        <input type="number" class="form-control" name="option_positions_y[]">
+                    </div>
+                </div>
+                <div class="col-12">
+                    <button type="button" class="btn btn-danger remove-option" onclick="removeOption(this)">Remove Option</button>
+                </div>
             `;
             optionsFields.appendChild(newOption);
         }
 
+        function removeField(button) {
+            button.closest('.field').remove();
+        }
+
         function removeOption(button) {
-            button.parentNode.remove();
+            button.closest('.option').remove();
         }
 
         document.getElementById('detailLaporanForm').addEventListener('submit', function(event) {
@@ -177,10 +249,8 @@
 
             const detailLaporan = { id_tmla, fields };
 
-            // Here you can send the JSON to your server
             console.log(JSON.stringify(detailLaporan));
 
-            // Example: Sending to server using Fetch API
             fetch('/admin/save_detail_laporan', {
                 method: 'POST',
                 headers: {
@@ -192,7 +262,7 @@
             .then(data => {
                 console.log('Success:', data);
                 alert('Detail laporan berhasil disimpan!');
-                window.location.href = '/admin';  // Redirect to admin page
+                window.location.href = '/admin'; 
             })
             .catch(error => {
                 console.error('Error:', error);

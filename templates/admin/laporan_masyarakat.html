@@ -38,7 +38,7 @@
             <table class="table table-bordered">
                 <thead>
                     <tr>
-                        <th>ID</th>
+                        <th>No</th>
                         <th>File</th>
                         <th>Jenis Laporan</th>
                         <th>Tanggal Dibuat</th>
@@ -48,12 +48,12 @@
                 <tbody>
                     {% for pdf in pdfs %}
                     <tr>
-                        <td>{{ pdf.id_ttp }}</td>
+                        <td>{{ loop.index }}</td>
                         <td>{{ pdf.file_ttp }}</td>
                         <td>{{ pdf.judul_tmla }}</td>
                         <td>{{ pdf.created_time_ttp }}</td>
                         <td>
-                            <a href="{{ url_for('uploaded_post_pdf', filename=pdf.file_ttp) }}" class="btn btn-primary" download>Download PDF</a>
+                            <a href="{{ url_for('uploaded_post_pdf', filename=pdf.file_ttp) }}" class="btn btn-primary mb-3" download>Download PDF</a>
                             <a href="{{ url_for('edit_pdf', id=pdf.id_ttp) }}" class="btn btn-secondary">Edit</a>
                         </td>
                     </tr>

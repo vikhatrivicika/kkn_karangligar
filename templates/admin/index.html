@@ -55,7 +55,8 @@
         <a href="#data" onclick="showContent('data')">Manage Data</a>
         <a href="#laporan" onclick="showContent('laporan')">Manage Laporan</a>
         <a href="#laporan_masyarakat" onclick="showContent('pdf')">Laporan Masyarakat</a>
-        <a href="#change_password" onclick="showContent('change_password')">Change Password</a> <!-- Tautan baru untuk ganti password -->
+        <a href="#profil" onclick="showContent('profil_desa')">Profil Desa</a>
+        <a href="#change_password" onclick="showContent('change_password')">Ganti Password</a> <!-- Tautan baru untuk ganti password -->
         <a href="{{ url_for('logout') }}">Logout</a>
     </div>
     <div class="content">
@@ -73,6 +74,9 @@
         </div>
         <div id="pdf" class="content-section">
             {% include 'admin/laporan_masyarakat.html' %}
+        </div>
+        <div id="profil_desa" class="content-section">
+            {% include 'admin/profil.html' %}
         </div>
         <div id="change_password" class="content-section">
             {% include 'admin/change_password.html' %} <!-- Menambahkan include halaman ganti password -->
