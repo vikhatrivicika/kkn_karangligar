@@ -83,7 +83,6 @@ def index():
             profile['kepala_desa_tmpo'] = json.loads(profile['kepala_desa_tmpo'])
             profile['kantor_tmpo'] = json.loads(profile['kantor_tmpo'])
 
-        print(profile)
 
         return render_template('index.html', posts=posts, data=data, laporan=laporan, profil=profile)
     return "Database connection error"
@@ -722,28 +721,43 @@ def generate_pdf_from_data(pdf_id, template_path, output_folder, new_filename):
             page = doc[0]  # Use the first page of the template
 
             for field in struktur:
-                x_points = field.get('position', {}).get('x', 0)
-                y_points = field.get('position', {}).get('y', 0)
                 text = form_data.get(field['name'], '')
-                fontsize = field.get('font_size', 12)
-
-                # Ensure numerical values are correctly typed
-                try:
-                    x_points = float(x_points)
-                    y_points = float(y_points)
-                    fontsize = float(fontsize)
-                except ValueError as e:
-                    print(f"ValueError: {e}")
-                    continue
-
                 if field['type'] == 'text':
+                    x_points = field.get('position', {}).get('x', 0)
+                    y_points = field.get('position', {}).get('y', 0)
+                    fontsize = field.get('font_size', 12)
+
+                    # Ensure numerical values are correctly typed
+                    try:
+                        x_points = float(x_points)
+                        y_points = float(y_points)
+                        fontsize = float(fontsize)
+                    except ValueError as e:
+                        print(f"ValueError: {e}")
+                        continue
+
+                    print(f"Inserting text for field '{field['name']}' at position ({x_points}, {y_points}) with fontsize {fontsize}")
                     page.insert_text((x_points, y_points), text, fontname='helv', fontsize=fontsize)
+
                 elif field['type'] == 'select':
-                    # Insert selected option's label text
-                    for option in field['options']:
-                        if option['value'] == text:
-                            page.insert_text((x_points, y_points), option['label'], fontname='helv', fontsize=fontsize)
-                            break
+                    # Always insert 'X' in bold regardless of the selected option value
+                    if text:  # Check if there is a selected value
+                        selected_option = next((option for option in field['options'] if option['value'] == text), None)
+                        if selected_option:
+                            option_x_points = selected_option.get('position', {}).get('x', 0)
+                            option_y_points = selected_option.get('position', {}).get('y', 0)
+                            option_fontsize = selected_option.get('font_size', 12)  # Default to 12 if not specified
+
+                            try:
+                                option_x_points = float(option_x_points)
+                                option_y_points = float(option_y_points)
+                                option_fontsize = float(option_fontsize)
+                            except ValueError as e:
+                                print(f"ValueError: {e}")
+                                continue
+
+                            print(f"Inserting 'X' for option '{selected_option['label']}' at position ({option_x_points}, {option_y_points}) with fontsize {option_fontsize}")
+                            page.insert_text((option_x_points, option_y_points), 'X', fontname='helv', fontsize=option_fontsize)
 
             # Save the filled PDF to a new file
             new_pdf_path = os.path.join(output_folder, new_filename)
@@ -752,6 +766,9 @@ def generate_pdf_from_data(pdf_id, template_path, output_folder, new_filename):
             return new_pdf_path
 
     return None
+
+
+
 
 
 @app.route('/admin/tbl_t_pdf', methods=['GET', 'POST'])
@@ -816,10 +833,7 @@ def edit_pdf(id):
                 template_path = os.path.join(app.config['UPLOAD_FOLDER_TEMPLATES'], laporan_record['file_tmla'])
 
                 # Generate a new filename
-                timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
-                base_filename, file_extension = os.path.splitext(pdf_record['file_ttp'])
-                new_filename = f"{base_filename}-edit-{timestamp}{file_extension}"
-
+                new_filename = generate_new_filename(pdf_record)
 
                 # Generate the updated PDF from the template and save it with the new filename
                 new_pdf_path = generate_pdf_from_data(id, template_path, app.config['UPLOAD_FOLDER_HASIL'], new_filename)
@@ -880,84 +894,6 @@ def change_password():
     return redirect(url_for('login'))
 
 
-# @app.route('/admin/profil', methods=['GET', 'POST'])
-# def admin_profil():
-    if check_session_timeout() and 'loggedin' in session:
-        db = get_db_connection()
-        if db:
-            cursor = db.cursor(dictionary=True)
-            if request.method == 'POST':
-                informasi = request.form['informasi_tmpo']
-                facebook = request.form['facebook_tmpo']
-                instagram = request.form['instagram_tmpo']
-                visi = request.form['visi_tmpo']
-                misi = request.form['misi_tmpo']
-                
-                kepala_desa = {}
-                kepala_desa['nama'] = request.form['kepala_desa_nama']
-                kepala_desa['jabatan'] = request.form['kepala_desa_jabatan']
-                
-                if 'kepala_desa_foto' in request.files:
-                    file = request.files['kepala_desa_foto']
-                    if file and file.filename != '':
-                        filename = file.filename
-                        filepath = os.path.join(app.config['UPLOAD_FOLDER_PROFIL'], filename)
-                        file.save(filepath)
-                        kepala_desa['foto'] = filename
-                    else:
-                        cursor.execute("SELECT kepala_desa_tmpo FROM tbl_m_profil WHERE id_tmpo=1")
-                        current_data = cursor.fetchone()
-                        if current_data:
-                            current_kepala_desa = json.loads(current_data['kepala_desa_tmpo'])
-                            kepala_desa['foto'] = current_kepala_desa.get('foto', '')
-
-                kepala_desa_json = json.dumps(kepala_desa)
-                
-                kantor = json.dumps({
-                    "kode_pos": request.form['kantor_kode_pos'],
-                    "alamat": request.form['kantor_alamat'],
-                    "notelepon": request.form['kantor_notelepon'],
-                    "email": request.form['kantor_email']
-                })
-                
-                if 'struktur_tmpo' in request.files:
-                    file = request.files['struktur_tmpo']
-                    if file and file.filename != '':
-                        struktur_filename = file.filename
-                        struktur_filepath = os.path.join(app.config['UPLOAD_FOLDER_PROFIL'], struktur_filename)
-                        file.save(struktur_filepath)
-                        struktur = struktur_filename
-                    else:
-                        cursor.execute("SELECT struktur_tmpo FROM tbl_m_profil WHERE id_tmpo=1")
-                        current_data = cursor.fetchone()
-                        if current_data:
-                            struktur = current_data.get('struktur_tmpo', '')
-
-                cursor.execute("""
-                    UPDATE tbl_m_profil SET 
-                        informasi_tmpo=%s, 
-                        facebook_tmpo=%s, 
-                        instagram_tmpo=%s, 
-                        visi_tmpo=%s, 
-                        misi_tmpo=%s, 
-                        kepala_desa_tmpo=%s, 
-                        struktur_tmpo=%s, 
-                        kantor_tmpo=%s 
-                    WHERE id_tmpo=1
-                """, (informasi, facebook, instagram, visi, misi, kepala_desa_json, struktur, kantor))
-                db.commit()
-                flash('Profil berhasil diperbarui!', 'success')
-                return redirect(url_for('admin_profil'))
-
-            cursor.execute("SELECT * FROM tbl_m_profil WHERE id_tmpo=1")
-            profil = cursor.fetchall()  # Fetch as list of dictionaries
-            if profil:
-                profil[0]['kepala_desa_tmpo'] = json.loads(profil[0]['kepala_desa_tmpo'])
-                profil[0]['kantor_tmpo'] = json.loads(profil[0]['kantor_tmpo'])
-
-            return render_template('admin/profil.html', profil=profil)
-    return redirect(url_for('login'))
-
 @app.route('/profil_desa')
 def profil_desa():
     db = get_db_connection()
@@ -973,6 +909,58 @@ def profil_desa():
         return render_template('profil_desa.html', profil=profile)
     return "Database connection error"
 
+@app.route('/all_posts', methods=['GET'])
+def all_posts():
+    db = get_db_connection()
+    if db:
+        cursor = db.cursor(dictionary=True)
+        
+        # Query dasar
+        query = """
+            SELECT p.id_ttp, p.judul_ttp, p.gambar_ttp, l.nama_tml 
+            FROM tbl_t_post p 
+            JOIN tbl_m_label l ON p.id_tml = l.id_tml 
+            WHERE p.active_ttp = '1' AND p.delected_ttp IS NULL
+        """
+        filters = []
+        params = {}
+
+        # Filter berdasarkan label
+        label = request.args.get('label')
+        if label:
+            filters.append("p.id_tml = %(label)s")
+            params['label'] = label
+
+        # Pencarian berdasarkan judul atau konten
+        search = request.args.get('search')
+        if search:
+            filters.append("(p.judul_ttp LIKE %(search)s OR p.postingan_ttp LIKE %(search)s)")
+            params['search'] = f"%{search}%"
+
+        # Gabungkan filter ke query
+        if filters:
+            query += " AND " + " AND ".join(filters)
+
+        cursor.execute(query, params)
+        posts = cursor.fetchall()
+
+        # Fetch labels for filter dropdown
+        cursor.execute("SELECT * FROM tbl_m_label WHERE delected_tml IS NULL")
+        labels = cursor.fetchall()
+
+        return render_template('all_post.html', posts=posts, labels=labels)
+    return "Database connection error"
+
+def generate_new_filename(pdf_record):
+    timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+    base_filename, file_extension = os.path.splitext(pdf_record['file_ttp'])
+
+    # Check if the base filename already contains "-edit-" and remove any existing timestamps
+    if "-edit-" in base_filename:
+        base_filename = base_filename.split("-edit-")[0]
+
+    new_filename = f"{base_filename}-edit-{timestamp}{file_extension}"
+    return new_filename
 
 if __name__ == '__main__':
     app.run(debug=True)

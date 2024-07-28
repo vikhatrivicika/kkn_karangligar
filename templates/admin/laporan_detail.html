@@ -64,36 +64,32 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label>Label:</label>
-                            <input type="text" class="form-control" name="labels[]" value="${fieldData.label || ''}">
+                            <input type="text" class="form-control" name="labels[]" value="${fieldData.label || ''}" required>
                         </div>
                         <div class="form-group">
                             <label>Type:</label>
-                            <select class="form-control" name="types[]" onchange="toggleOptions(this)">
+                            <select class="form-control" name="types[]" onchange="toggleOptions(this)" required>
                                 <option value="text" ${fieldData.type === 'text' ? 'selected' : ''}>Text</option>
                                 <option value="select" ${fieldData.type === 'select' ? 'selected' : ''}>Select</option>
                             </select>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group maxLengthContainer">
                             <label>Max Length:</label>
-                            <input type="number" class="form-control" name="max_lengths[]" value="${fieldData.max_length || ''}">
-                        </div>
-                        <div class="form-group">
-                            <label>Font:</label>
-                            <input type="text" class="form-control" name="fonts[]" value="${fieldData.font || ''}">
+                            <input type="number" class="form-control" name="max_lengths[]" value="${fieldData.max_length || ''}" min="1">
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <div class="form-group">
+                        <div class="form-group fontSizeContainer">
                             <label>Font Size:</label>
-                            <input type="number" class="form-control" name="font_sizes[]" value="${fieldData.font_size || ''}">
+                            <input type="number" class="form-control" name="font_sizes[]" value="${fieldData.font_size || ''}" min="1">
                         </div>
-                        <div class="form-group">
+                        <div class="form-group positionXContainer">
                             <label>Position X:</label>
-                            <input type="number" class="form-control" name="positions_x[]" value="${fieldData.position ? fieldData.position.x : ''}">
+                            <input type="number" class="form-control" name="positions_x[]" value="${fieldData.position ? fieldData.position.x : ''}" min="0">
                         </div>
-                        <div class="form-group">
+                        <div class="form-group positionYContainer">
                             <label>Position Y:</label>
-                            <input type="number" class="form-control" name="positions_y[]" value="${fieldData.position ? fieldData.position.y : ''}">
+                            <input type="number" class="form-control" name="positions_y[]" value="${fieldData.position ? fieldData.position.y : ''}" min="0">
                         </div>
                     </div>
                 </div>
@@ -105,25 +101,21 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label>Option Value:</label>
-                                        <input type="text" class="form-control" name="option_values[]" value="${option.label || ''}">
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Font:</label>
-                                        <input type="text" class="form-control" name="option_fonts[]" value="${option.font || ''}">
+                                        <input type="text" class="form-control" name="option_values[]" value="${option.label || ''}" required>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label>Font Size:</label>
-                                        <input type="number" class="form-control" name="option_font_sizes[]" value="${option.font_size || ''}">
+                                        <input type="number" class="form-control" name="option_font_sizes[]" value="${option.font_size || ''}" min="1">
                                     </div>
                                     <div class="form-group">
                                         <label>Position X:</label>
-                                        <input type="number" class="form-control" name="option_positions_x[]" value="${option.position ? option.position.x : ''}">
+                                        <input type="number" class="form-control" name="option_positions_x[]" value="${option.position ? option.position.x : ''}" min="0">
                                     </div>
                                     <div class="form-group">
                                         <label>Position Y:</label>
-                                        <input type="number" class="form-control" name="option_positions_y[]" value="${option.position ? option.position.y : ''}">
+                                        <input type="number" class="form-control" name="option_positions_y[]" value="${option.position ? option.position.y : ''}" min="0">
                                     </div>
                                 </div>
                                 <div class="col-12">
@@ -137,18 +129,29 @@
                 <button type="button" class="btn btn-danger remove-field mt-3" onclick="removeField(this)">Remove Field</button>
             `;
             container.appendChild(newField);
+            toggleOptions(newField.querySelector('select[name="types[]"]'));
         }
 
         function toggleOptions(selectElement) {
             const field = selectElement.closest('.field');
-            const fieldAttributes = field.querySelector('.field-attributes');
             const optionsContainer = field.querySelector('.optionsContainer');
+            const maxLengthContainer = field.querySelector('.maxLengthContainer');
+            const fontSizeContainer = field.querySelector('.fontSizeContainer');
+            const positionXContainer = field.querySelector('.positionXContainer');
+            const positionYContainer = field.querySelector('.positionYContainer');
+
             if (selectElement.value === 'select') {
-                fieldAttributes.style.display = 'none';
                 optionsContainer.style.display = 'block';
+                maxLengthContainer.style.display = 'none';
+                fontSizeContainer.style.display = 'none';
+                positionXContainer.style.display = 'none';
+                positionYContainer.style.display = 'none';
             } else {
-                fieldAttributes.style.display = 'block';
                 optionsContainer.style.display = 'none';
+                maxLengthContainer.style.display = 'block';
+                fontSizeContainer.style.display = 'block';
+                positionXContainer.style.display = 'block';
+                positionYContainer.style.display = 'block';
             }
         }
 
@@ -160,25 +163,21 @@
                 <div class="col-md-6">
                     <div class="form-group">
                         <label>Option Value:</label>
-                        <input type="text" class="form-control" name="option_values[]">
-                    </div>
-                    <div class="form-group">
-                        <label>Font:</label>
-                        <input type="text" class="form-control" name="option_fonts[]">
+                        <input type="text" class="form-control" name="option_values[]" required>
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="form-group">
                         <label>Font Size:</label>
-                        <input type="number" class="form-control" name="option_font_sizes[]">
+                        <input type="number" class="form-control" name="option_font_sizes[]" min="1">
                     </div>
                     <div class="form-group">
                         <label>Position X:</label>
-                        <input type="number" class="form-control" name="option_positions_x[]">
+                        <input type="number" class="form-control" name="option_positions_x[]" min="0">
                     </div>
                     <div class="form-group">
                         <label>Position Y:</label>
-                        <input type="number" class="form-control" name="option_positions_y[]">
+                        <input type="number" class="form-control" name="option_positions_y[]" min="0">
                     </div>
                 </div>
                 <div class="col-12">
@@ -201,7 +200,6 @@
             const labels = document.querySelectorAll('input[name="labels[]"]');
             const types = document.querySelectorAll('select[name="types[]"]');
             const max_lengths = document.querySelectorAll('input[name="max_lengths[]"]');
-            const fonts = document.querySelectorAll('input[name="fonts[]"]');
             const font_sizes = document.querySelectorAll('input[name="font_sizes[]"]');
             const positions_x = document.querySelectorAll('input[name="positions_x[]"]');
             const positions_y = document.querySelectorAll('input[name="positions_y[]"]');
@@ -214,20 +212,13 @@
                     label: labels[i].value,
                     type: types[i].value,
                     name: labels[i].value.toLowerCase().replace(/\s+/g, '_'),
-                    max_length: max_lengths[i].value,
-                    font: fonts[i].value,
-                    font_size: font_sizes[i].value,
-                    position: {
-                        x: positions_x[i].value,
-                        y: positions_y[i].value
-                    }
                 };
+
                 if (field.type === 'select') {
                     field.options = [];
                     const options = optionsContainers[i].querySelectorAll('.option');
                     options.forEach(option => {
                         const optionValue = option.querySelector('input[name="option_values[]"]').value.trim();
-                        const optionFont = option.querySelector('input[name="option_fonts[]"]').value;
                         const optionFontSize = option.querySelector('input[name="option_font_sizes[]"]').value;
                         const optionPositionX = option.querySelector('input[name="option_positions_x[]"]').value;
                         const optionPositionY = option.querySelector('input[name="option_positions_y[]"]').value;
@@ -235,7 +226,6 @@
                         field.options.push({
                             label: optionValue,
                             value: optionValue.toLowerCase().replace(/\s+/g, '_'),
-                            font: optionFont,
                             font_size: optionFontSize,
                             position: {
                                 x: optionPositionX,
@@ -243,13 +233,19 @@
                             }
                         });
                     });
+                } else {
+                    field.max_length = max_lengths[i].value;
+                    field.font_size = font_sizes[i].value;
+                    field.position = {
+                        x: positions_x[i].value,
+                        y: positions_y[i].value
+                    };
                 }
+
                 fields.push(field);
             }
 
             const detailLaporan = { id_tmla, fields };
-
-            console.log(JSON.stringify(detailLaporan));
 
             fetch('/admin/save_detail_laporan', {
                 method: 'POST',
@@ -258,14 +254,19 @@
                 },
                 body: JSON.stringify(detailLaporan)
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
             .then(data => {
-                console.log('Success:', data);
                 alert('Detail laporan berhasil disimpan!');
                 window.location.href = '/admin'; 
             })
             .catch(error => {
                 console.error('Error:', error);
+                alert('Terjadi kesalahan saat menyimpan detail laporan. Silakan coba lagi.');
             });
         });
     </script>
