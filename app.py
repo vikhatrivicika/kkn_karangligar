@@ -379,12 +379,14 @@ def admin():
             total_laporan = cursor.fetchone()['total']
             total_pages_laporan = (total_laporan + per_page - 1) // per_page
 
-            # Fetch Pdf with pagination
             query_pdf = f"""
-                SELECT * FROM tbl_t_pdf
-                ORDER BY created_time_ttp {sort_order}
+                SELECT tbl_t_pdf.*, tbl_m_laporan.judul_tmla
+                FROM tbl_t_pdf
+                JOIN tbl_m_laporan ON tbl_t_pdf.id_tmla = tbl_m_laporan.id_tmla
+                ORDER BY tbl_t_pdf.created_time_ttp {sort_order}
                 LIMIT %s OFFSET %s
             """
+
             cursor.execute(query_pdf, (per_page, offset))
             pdf = cursor.fetchall()
             cursor.execute("SELECT COUNT(*) as total FROM tbl_t_pdf")
