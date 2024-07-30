@@ -71,6 +71,7 @@
                             <select class="form-control" name="types[]" onchange="toggleOptions(this)" required>
                                 <option value="text" ${fieldData.type === 'text' ? 'selected' : ''}>Text</option>
                                 <option value="select" ${fieldData.type === 'select' ? 'selected' : ''}>Select</option>
+                                <option value="date" ${fieldData.type === 'date' ? 'selected' : ''}>Date</option>
                             </select>
                         </div>
                         <div class="form-group maxLengthContainer">
@@ -146,9 +147,15 @@
                 fontSizeContainer.style.display = 'none';
                 positionXContainer.style.display = 'none';
                 positionYContainer.style.display = 'none';
-            } else {
+            } else if (selectElement.value === 'text') {
                 optionsContainer.style.display = 'none';
                 maxLengthContainer.style.display = 'block';
+                fontSizeContainer.style.display = 'block';
+                positionXContainer.style.display = 'block';
+                positionYContainer.style.display = 'block';
+            } else if (selectElement.value === 'date') {
+                optionsContainer.style.display = 'none';
+                maxLengthContainer.style.display = 'none';
                 fontSizeContainer.style.display = 'block';
                 positionXContainer.style.display = 'block';
                 positionYContainer.style.display = 'block';
@@ -233,8 +240,14 @@
                             }
                         });
                     });
-                } else {
+                } else if (field.type === 'text') {
                     field.max_length = max_lengths[i].value;
+                    field.font_size = font_sizes[i].value;
+                    field.position = {
+                        x: positions_x[i].value,
+                        y: positions_y[i].value
+                    };
+                } else if (field.type === 'date') {
                     field.font_size = font_sizes[i].value;
                     field.position = {
                         x: positions_x[i].value,

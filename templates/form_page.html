@@ -27,7 +27,6 @@
       <div class="dots">
         <span></span>
         <span></span>
-        <span></span>
       </div>
     </div>
   </div>
@@ -84,6 +83,8 @@
                 <option value="{{ option.value }}">{{ option.label }}</option>
                 {% endfor %}
               </select>
+              {% elif field.type == 'date' %}
+              <input type="date" class="form-control" id="{{ field.name }}" name="{{ field.name }}" required>
               {% endif %}
             </div>
             {% endfor %}

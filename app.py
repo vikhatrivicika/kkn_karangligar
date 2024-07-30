@@ -8,6 +8,8 @@ import pandas as pd
 import json
 import fitz  # PyMuPDF
 import io
+import locale
+locale.setlocale(locale.LC_TIME, 'id_ID.UTF-8')  
 
 app = Flask(__name__, static_url_path='/static')
 app.secret_key = os.environ.get('SECRET_KEY', 'your_secret_key')
@@ -191,22 +193,32 @@ def informasi(id):
 
             return render_template('informasi.html', post=post, columns=columns, search_performed=False)
     return "Database connection error"
-
 @app.route('/admin', methods=['GET', 'POST'])
 def admin():
     if check_session_timeout() and 'loggedin' in session:
         db = get_db_connection()
         if db:
             cursor = db.cursor(dictionary=True)
+            
+            # Get pagination and sorting parameters
+            page = request.args.get('page', 1, type=int)
+            per_page = 5
+            sort = request.args.get('sort', 'desc')
+            table = request.args.get('table', 'posts')
+            offset = (page - 1) * per_page
+            sort_order = 'DESC' if sort == 'desc' else 'ASC'
+            
+            # Handle POST requests
             if request.method == 'POST':
+                # Handle label submission
                 if 'label_name' in request.form:
-                    # Handle label submission
                     label_name = request.form['label_name']
                     cursor.execute("INSERT INTO tbl_m_label (nama_tml, created_tml) VALUES (%s, %s)", (label_name, session['id_tmu']))
                     db.commit()
-                    return redirect(url_for('admin'))
+                    return redirect(url_for('admin', table='labels'))
+                
+                # Handle file upload
                 elif 'file' in request.files:
-                    # Handle file upload
                     file = request.files['file']
                     keterangan = request.form['keterangan']
                     judul = request.form['judul']
@@ -216,18 +228,20 @@ def admin():
                     cursor.execute("INSERT INTO tbl_m_data (nama_tmd, judul_tmd, keterangan_tmd, active_tmd, created_tmd) VALUES (%s, %s, %s, %s, %s)",
                                    (filename, judul, keterangan, '1', int(time.time())))
                     db.commit()
-                    return redirect(url_for('admin'))
+                    return redirect(url_for('admin', table='data'))
+                
+                # Handle profile update
                 elif 'informasi_tmpo' in request.form:
-                    # Handle profile update
                     informasi = request.form['informasi_tmpo']
                     facebook = request.form['facebook_tmpo']
                     instagram = request.form['instagram_tmpo']
                     visi = request.form['visi_tmpo']
                     misi = request.form['misi_tmpo']
                     
-                    kepala_desa = {}
-                    kepala_desa['nama'] = request.form['kepala_desa_nama']
-                    kepala_desa['jabatan'] = request.form['kepala_desa_jabatan']
+                    kepala_desa = {
+                        'nama': request.form['kepala_desa_nama'],
+                        'jabatan': request.form['kepala_desa_jabatan']
+                    }
                     
                     if 'kepala_desa_foto' in request.files:
                         file = request.files['kepala_desa_foto']
@@ -280,8 +294,9 @@ def admin():
                     db.commit()
                     flash('Profil berhasil diperbarui!', 'success')
                     return redirect(url_for('admin'))
+                
+                # Handle filtering for PDFs
                 else:
-                    # Handle filtering for PDFs
                     query = """
                         SELECT pdf.id_ttp, pdf.file_ttp, laporan.judul_tmla, pdf.created_time_ttp
                         FROM tbl_t_pdf pdf 
@@ -316,21 +331,66 @@ def admin():
             cursor.execute("SELECT id_tmla, judul_tmla FROM tbl_m_laporan")
             judul_laporan_values = cursor.fetchall()
 
-            # Fetch posts
-            cursor.execute("SELECT * FROM tbl_t_post WHERE delected_ttp IS NULL")
+            # Fetch posts with pagination
+            query_posts = f"""
+                SELECT * FROM tbl_t_post WHERE delected_ttp IS NULL
+                ORDER BY created_ttp {sort_order}
+                LIMIT %s OFFSET %s
+            """
+            cursor.execute(query_posts, (per_page, offset))
             posts = cursor.fetchall()
+            cursor.execute("SELECT COUNT(*) as total FROM tbl_t_post WHERE delected_ttp IS NULL")
+            total_posts = cursor.fetchone()['total']
+            total_pages_posts = (total_posts + per_page - 1) // per_page
 
-            # Fetch labels
-            cursor.execute("SELECT * FROM tbl_m_label WHERE delected_tml IS NULL")
+            # Fetch labels with pagination
+            query_labels = f"""
+                SELECT * FROM tbl_m_label WHERE delected_tml IS NULL
+                ORDER BY created_tml {sort_order}
+                LIMIT %s OFFSET %s
+            """
+            cursor.execute(query_labels, (per_page, offset))
             labels = cursor.fetchall()
+            cursor.execute("SELECT COUNT(*) as total FROM tbl_m_label WHERE delected_tml IS NULL")
+            total_labels = cursor.fetchone()['total']
+            total_pages_labels = (total_labels + per_page - 1) // per_page
 
-            # Fetch data
-            cursor.execute("SELECT * FROM tbl_m_data WHERE delected_tmd IS NULL")
+            # Fetch data with pagination
+            query_data = f"""
+                SELECT * FROM tbl_m_data WHERE delected_tmd IS NULL
+                ORDER BY created_tmd {sort_order}
+                LIMIT %s OFFSET %s
+            """
+            cursor.execute(query_data, (per_page, offset))
             data = cursor.fetchall()
+            cursor.execute("SELECT COUNT(*) as total FROM tbl_m_data WHERE delected_tmd IS NULL")
+            total_data = cursor.fetchone()['total']
+            total_pages_data = (total_data + per_page - 1) // per_page
 
-            # Fetch laporan
-            cursor.execute("SELECT * FROM tbl_m_laporan WHERE delected_tmla IS NULL")
+            # Fetch laporan with pagination
+            query_laporan = f"""
+                SELECT * FROM tbl_m_laporan WHERE delected_tmla IS NULL
+                ORDER BY created_tmla {sort_order}
+                LIMIT %s OFFSET %s
+            """
+            cursor.execute(query_laporan, (per_page, offset))
             laporan = cursor.fetchall()
+            cursor.execute("SELECT COUNT(*) as total FROM tbl_m_laporan WHERE delected_tmla IS NULL")
+            total_laporan = cursor.fetchone()['total']
+            total_pages_laporan = (total_laporan + per_page - 1) // per_page
+
+            # Fetch Pdf with pagination
+            query_pdf = f"""
+                SELECT * FROM tbl_t_pdf
+                ORDER BY created_time_ttp {sort_order}
+                LIMIT %s OFFSET %s
+            """
+            cursor.execute(query_pdf, (per_page, offset))
+            pdf = cursor.fetchall()
+            cursor.execute("SELECT COUNT(*) as total FROM tbl_t_pdf")
+            total_pdf = cursor.fetchone()['total']
+            total_pages_pdf = (total_pdf + per_page - 1) // per_page
+
 
             # Fetch profile
             cursor.execute("SELECT * FROM tbl_m_profil WHERE id_tmpo=1")
@@ -339,7 +399,11 @@ def admin():
                 profil[0]['kepala_desa_tmpo'] = json.loads(profil[0]['kepala_desa_tmpo'])
                 profil[0]['kantor_tmpo'] = json.loads(profil[0]['kantor_tmpo'])
 
-            return render_template('admin/index.html', posts=posts, labels=labels, data=data, laporan=laporan, pdfs=pdfs, judul_laporan_values=judul_laporan_values, profil=profil)
+            return render_template('admin/index.html', 
+                                   posts=posts, labels=labels, data=data, laporan=laporan, pdf=pdf, 
+                                   judul_laporan_values=judul_laporan_values, profil=profil, 
+                                   page=page, total_pages_posts=total_pages_posts, total_pages_labels=total_pages_labels, 
+                                   total_pages_data=total_pages_data, total_pages_laporan=total_pages_laporan, total_pages_pdf=total_pages_pdf, sort=sort, per_page = per_page)
         return "Database connection error"
     return redirect(url_for('login'))
 
@@ -759,6 +823,31 @@ def generate_pdf_from_data(pdf_id, template_path, output_folder, new_filename):
                             print(f"Inserting 'X' for option '{selected_option['label']}' at position ({option_x_points}, {option_y_points}) with fontsize {option_fontsize}")
                             page.insert_text((option_x_points, option_y_points), 'X', fontname='helv', fontsize=option_fontsize)
 
+                elif field['type'] == 'date':
+                    x_points = field.get('position', {}).get('x', 0)
+                    y_points = field.get('position', {}).get('y', 0)
+                    fontsize = field.get('font_size', 12)
+
+                    # Ensure numerical values are correctly typed
+                    try:
+                        x_points = float(x_points)
+                        y_points = float(y_points)
+                        fontsize = float(fontsize)
+                    except ValueError as e:
+                        print(f"ValueError: {e}")
+                        continue
+
+                    # Format the date
+                    try:
+                        date_obj = datetime.strptime(text, '%Y-%m-%d')
+                        formatted_date = date_obj.strftime('%d %B %Y')
+                    except ValueError as e:
+                        print(f"ValueError: {e}")
+                        formatted_date = text
+
+                    print(f"Inserting date for field '{field['name']}' at position ({x_points}, {y_points}) with fontsize {fontsize}")
+                    page.insert_text((x_points, y_points), formatted_date, fontname='helv', fontsize=fontsize)
+
             # Save the filled PDF to a new file
             new_pdf_path = os.path.join(output_folder, new_filename)
             doc.save(new_pdf_path)
@@ -766,6 +855,7 @@ def generate_pdf_from_data(pdf_id, template_path, output_folder, new_filename):
             return new_pdf_path
 
     return None
+
 
 
 
