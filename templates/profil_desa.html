@@ -32,15 +32,15 @@
       <div class="row">
         <div class="col-12">
           <nav class="main-nav">
-            <a href="index.html" class="logo">
-              <img src="../static/assets/images/logo.png" alt="" style="max-width: 112px;">
+            <a href="{{ url_for('index') }}" class="logo">
+              <img src="{{ url_for('static', filename='assets/images/logo.png') }}" alt="" style="max-width: 112px;">
             </a>
             <ul class="nav">
-              <li class="scroll-to-section"><a href="../#top" class="active">Beranda</a></li>
-              <li class="scroll-to-section"><a href="../#tentang">Informasi Desa</a></li>
-              <li class="scroll-to-section"><a href="../#kegiatan">Kegiatan</a></li>
-              <li class="scroll-to-section"><a href="../#info">Informasi</a></li>
-              <li class="scroll-to-section"><a href="../#kontak">Kontak</a></li>
+              <li class="scroll-to-section"><a href="{{ url_for('index') }}#top" class="active">Beranda</a></li>
+              <li class="scroll-to-section"><a href="{{ url_for('index') }}#tentang">Informasi Desa</a></li>
+              <li class="scroll-to-section"><a href="{{ url_for('index') }}#kegiatan">Kegiatan</a></li>
+              <li class="scroll-to-section"><a href="{{ url_for('index') }}#info">Form</a></li>
+              <li class="scroll-to-section"><a href="{{ url_for('index') }}#kontak">Kontak</a></li>
             </ul>
             <a class='menu-trigger'>
               <span>Menu</span>

@@ -39,7 +39,7 @@
               <li class="scroll-to-section"><a href="{{ url_for('index') }}#top" class="active">Beranda</a></li>
               <li class="scroll-to-section"><a href="{{ url_for('index') }}#tentang">Informasi Desa</a></li>
               <li class="scroll-to-section"><a href="{{ url_for('index') }}#kegiatan">Kegiatan</a></li>
-              <li class="scroll-to-section"><a href="{{ url_for('index') }}#info">Informasi</a></li>
+              <li class="scroll-to-section"><a href="{{ url_for('index') }}#info">Form</a></li>
               <li class="scroll-to-section"><a href="{{ url_for('index') }}#kontak">Kontak</a></li>
             </ul>
             <a class='menu-trigger'>
@@ -92,7 +92,7 @@
     <div class="row">
       {% if posts %}
         {% for post in posts %}
-        <div class="col-lg-4 col-md-6 mb-4">
+        <div class="col-lg-3 col-md-6 mb-4">
           <div class="card h-100">
             <img class="card-img-top" src="{{ url_for('uploaded_post_thumbnail', filename=post['gambar_ttp']) }}" alt="">
             <div class="card-body">

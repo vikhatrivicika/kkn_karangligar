@@ -6,7 +6,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <title>{{ nama_surat }}</title>
   <!-- Bootstrap core CSS -->
-  <link href="../static/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
   <!-- Additional CSS Files -->
   <link rel="stylesheet" href="../static/assets/css/fontawesome.css">
   <link rel="stylesheet" href="../static/assets/css/templatemo-tale-seo-agency.css">
@@ -36,15 +36,15 @@
       <div class="row">
         <div class="col-12">
           <nav class="main-nav">
-            <a href="index.html" class="logo">
-              <img src="../static/assets/images/logo.png" alt="" style="max-width: 112px;">
+            <a href="{{ url_for('index') }}" class="logo">
+              <img src="{{ url_for('static', filename='assets/images/logo.png') }}" alt="" style="max-width: 112px;">
             </a>
             <ul class="nav">
-              <li class="scroll-to-section"><a href="../#top" class="active">Beranda</a></li>
-              <li class="scroll-to-section"><a href="../#tentang">Informasi Desa</a></li>
-              <li class="scroll-to-section"><a href="../#kegiatan">Kegiatan</a></li>
-              <li class="scroll-to-section"><a href="../#info">Informasi</a></li>
-              <li class="scroll-to-section"><a href="../#kontak">Kontak</a></li>
+              <li class="scroll-to-section"><a href="{{ url_for('index') }}#top" class="active">Beranda</a></li>
+              <li class="scroll-to-section"><a href="{{ url_for('index') }}#tentang">Informasi Desa</a></li>
+              <li class="scroll-to-section"><a href="{{ url_for('index') }}#kegiatan">Kegiatan</a></li>
+              <li class="scroll-to-section"><a href="{{ url_for('index') }}#info">Form</a></li>
+              <li class="scroll-to-section"><a href="{{ url_for('index') }}#kontak">Kontak</a></li>
             </ul>
             <a class='menu-trigger'>
               <span>Menu</span>
@@ -71,7 +71,7 @@
     <div class="container">
       <div class="row justify-content-center">
         <div class="col-lg-12">
-          <form method="POST" class="form-container" >
+          <form method="POST" class="form-container" id="mainForm">
             {% for field in fields %}
             <div class="form-group">
               <label for="{{ field.name }}">{{ field.label }}</label>
@@ -95,6 +95,24 @@
     </div>
   </div>
 
+  <!-- Modal -->
+  <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="successModalLabel">Keterangan</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          Kode anda adalah <span id="kode">{{ kode }}</span>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="closeModalButton">Tutup</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <footer>
     <div class="container">
       <div class="col-lg-12">
@@ -105,12 +123,26 @@
     </div>
   </footer>
   <!-- Scripts -->
-  <script src="../static/vendor/jquery/jquery.min.js"></script>
-  <script src="../static/vendor/bootstrap/js/bootstrap.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
   <script src="../static/assets/js/isotope.min.js"></script>
   <script src="../static/assets/js/owl-carousel.js"></script>
   <script src="../static/assets/js/tabs.js"></script>
   <script src="../static/assets/js/popup.js"></script>
   <script src="../static/assets/js/custom.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const showModal = {{ show_modal|tojson }};
+      const modal = new bootstrap.Modal(document.getElementById('successModal'));
+      if (showModal) {
+        modal.show();
+      }
+
+      document.getElementById('closeModalButton').addEventListener('click', function() {
+        modal.hide();
+        window.location.href = "{{ url_for('index') }}#info";
+      });
+    });
+  </script>
 </body>
 </html>

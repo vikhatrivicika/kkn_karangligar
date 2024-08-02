@@ -74,7 +74,7 @@
                                 <option value="date" ${fieldData.type === 'date' ? 'selected' : ''}>Date</option>
                             </select>
                         </div>
-                        <div class="form-group maxLengthContainer">
+                        <div class="form-group maxLengthContainer" style="display: ${fieldData.type === 'text' ? 'block' : 'none'};">
                             <label>Max Length:</label>
                             <input type="number" class="form-control" name="max_lengths[]" value="${fieldData.max_length || ''}" min="1">
                         </div>
@@ -83,6 +83,10 @@
                         <div class="form-group fontSizeContainer">
                             <label>Font Size:</label>
                             <input type="number" class="form-control" name="font_sizes[]" value="${fieldData.font_size || ''}" min="1">
+                        </div>
+                        <div class="form-group letterSpacingContainer" style="display: ${fieldData.type === 'text' ? 'block' : 'none'};">
+                            <label>Letter Spacing:</label>
+                            <input type="number" class="form-control" name="letter_spacings[]" value="${fieldData.letter_spacing || ''}" step="0.1">
                         </div>
                         <div class="form-group positionXContainer">
                             <label>Position X:</label>
@@ -138,6 +142,7 @@
             const optionsContainer = field.querySelector('.optionsContainer');
             const maxLengthContainer = field.querySelector('.maxLengthContainer');
             const fontSizeContainer = field.querySelector('.fontSizeContainer');
+            const letterSpacingContainer = field.querySelector('.letterSpacingContainer');
             const positionXContainer = field.querySelector('.positionXContainer');
             const positionYContainer = field.querySelector('.positionYContainer');
 
@@ -145,18 +150,21 @@
                 optionsContainer.style.display = 'block';
                 maxLengthContainer.style.display = 'none';
                 fontSizeContainer.style.display = 'none';
+                letterSpacingContainer.style.display = 'none';
                 positionXContainer.style.display = 'none';
                 positionYContainer.style.display = 'none';
             } else if (selectElement.value === 'text') {
                 optionsContainer.style.display = 'none';
                 maxLengthContainer.style.display = 'block';
                 fontSizeContainer.style.display = 'block';
+                letterSpacingContainer.style.display = 'block';
                 positionXContainer.style.display = 'block';
                 positionYContainer.style.display = 'block';
             } else if (selectElement.value === 'date') {
                 optionsContainer.style.display = 'none';
                 maxLengthContainer.style.display = 'none';
                 fontSizeContainer.style.display = 'block';
+                letterSpacingContainer.style.display = 'none';
                 positionXContainer.style.display = 'block';
                 positionYContainer.style.display = 'block';
             }
@@ -208,6 +216,7 @@
             const types = document.querySelectorAll('select[name="types[]"]');
             const max_lengths = document.querySelectorAll('input[name="max_lengths[]"]');
             const font_sizes = document.querySelectorAll('input[name="font_sizes[]"]');
+            const letter_spacings = document.querySelectorAll('input[name="letter_spacings[]"]');
             const positions_x = document.querySelectorAll('input[name="positions_x[]"]');
             const positions_y = document.querySelectorAll('input[name="positions_y[]"]');
             const optionsContainers = document.querySelectorAll('.optionsFields');
@@ -240,19 +249,17 @@
                             }
                         });
                     });
-                } else if (field.type === 'text') {
-                    field.max_length = max_lengths[i].value;
+                } else {
                     field.font_size = font_sizes[i].value;
                     field.position = {
                         x: positions_x[i].value,
                         y: positions_y[i].value
                     };
-                } else if (field.type === 'date') {
-                    field.font_size = font_sizes[i].value;
-                    field.position = {
-                        x: positions_x[i].value,
-                        y: positions_y[i].value
-                    };
+
+                    if (field.type === 'text') {
+                        field.max_length = max_lengths[i].value;
+                        field.letter_spacing = letter_spacings[i].value;
+                    }
                 }
 
                 fields.push(field);

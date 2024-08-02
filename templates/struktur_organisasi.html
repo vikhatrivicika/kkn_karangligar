@@ -2,250 +2,373 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Struktur Organisasi KKN</title>
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-  <style>
-    .team-member {
-      text-align: center;
-      margin-bottom: 30px;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Struktur Organisasi</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .member-photo {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 50%;
+            margin-bottom: 10px;
+        }
 
-    .team-member img {
-      border-radius: 50%;
-      width: 150px;
-      height: 150px;
-      object-fit: cover;
-    }
+        .member-card {
+            margin-bottom: 15px;
+        }
 
-    .card {
-      margin: 20px;
-      padding: 10px;
-    }
+        .card-header {
+            cursor: pointer;
+            background-color: #28a745;
+            color: white;
+        }
 
-    .jsplumb-connector {
-      z-index: -1;
-    }
-  </style>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jsPlumb/2.15.6/jsplumb.min.js"></script>
+        .org-chart {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .level {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .details {
+            display: none;
+        }
+
+        .member-name {
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            margin: 0 10px;
+        }
+
+        .logos {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+    </style>
 </head>
 
 <body>
-  <div class="container">
-    <h1 class="text-center my-4">Struktur Organisasi KKN</h1>
-
-    <div class="row justify-content-center">
-      <div class="col-md-6" id="dpl">
-        <div class="card team-member">
-          <img src="../static/assets/images/IMG_20240715_130636.jpg" alt="Dosen Pembimbing Lapangan">
-          <div class="card-body">
-            <h3 class="card-title">Nama Dosen Pembimbing Lapangan</h3>
-            <p class="card-text">Dosen Pembimbing Lapangan</p>
-          </div>
+    <div class="container mt-5">
+        <div class="text-center mb-4">
+            <div class="logos">
+                <img src="logo1.png" alt="Logo 1" class="logo">
+                <img src="logo2.png" alt="Logo 2" class="logo">
+                <img src="logo3.png" alt="Logo 3" class="logo">
+                <img src="logo4.png" alt="Logo 4" class="logo">
+                <img src="logo5.png" alt="Logo 5" class="logo">
+            </div>
+            <h2>Struktur Organisasi</h2>
         </div>
-      </div>
+        <div class="org-chart">
+            <!-- Ketua dan Wakil Ketua -->
+            <div class="card mb-3">
+                <div class="card-header" onclick="toggleSection('ketua')">
+                    <h5 class="mb-0 text-center">Ketua dan Wakil Ketua</h5>
+                </div>
+                <div class="card-body" id="ketua">
+                    <div class="level">
+                        <div class="col-12 col-md-6 col-lg-4 member-card">
+                            <div class="card">
+                                <div class="card-body text-center">
+                                    <img src="pas.jpg" alt="Sandra Juliyanti" class="member-photo">
+                                    <div class="member-name">Sandra Juliyanti</div>
+                                    <div class="details">
+                                        <p>21416262201062</p>
+                                        <p>Akuntansi</p>
+                                        <p>Ketua Kelompok</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6 col-lg-4 member-card">
+                            <div class="card">
+                                <div class="card-body text-center">
+                                    <img src="pas.jpg" alt="Zulvan Lahiya Apriana" class="member-photo">
+                                    <div class="member-name">Zulvan Lahiya Apriana</div>
+                                    <div class="details">
+                                        <p>21416221201034</p>
+                                        <p>Teknik Mesin</p>
+                                        <p>Wakil Ketua</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sekretaris -->
+            <div class="card mb-3">
+                <div class="card-header" onclick="toggleSection('sekretaris')">
+                    <h5 class="mb-0 text-center">Sekretaris</h5>
+                </div>
+                <div class="card-body" id="sekretaris">
+                    <div class="level">
+                        <div class="col-12 col-md-6 col-lg-4 member-card">
+                            <div class="card">
+                                <div class="card-body text-center">
+                                    <img src="path/to/photo.jpg" alt="Fathin Putri Azizah" class="member-photo">
+                                    <div class="member-name">Fathin Putri Azizah</div>
+                                    <div class="details">
+                                        <p>21416257201017</p>
+                                        <p>Sistem Informasi</p>
+                                        <p>Sekretaris 1</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6 col-lg-4 member-card">
+                            <div class="card">
+                                <div class="card-body text-center">
+                                    <img src="path/to/photo.jpg" alt="Imelda Amelia Widiastuti" class="member-photo">
+                                    <div class="member-name">Imelda Amelia Widiastuti</div>
+                                    <div class="details">
+                                        <p>21416261201122</p>
+                                        <p>Manajemen</p>
+                                        <p>Sekretaris 2</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bendahara -->
+            <div class="card mb-3">
+                <div class="card-header" onclick="toggleSection('bendahara')">
+                    <h5 class="mb-0 text-center">Bendahara</h5>
+                </div>
+                <div class="card-body" id="bendahara">
+                    <div class="level">
+                        <div class="col-12 col-md-6 col-lg-4 member-card">
+                            <div class="card">
+                                <div class="card-body text-center">
+                                    <img src="path/to/photo.jpg" alt="Azzahra Darojatu Rafiah" class="member-photo">
+                                    <div class="member-name">Azzahra Darojatu Rafiah</div>
+                                    <div class="details">
+                                        <p>21416273201055</p>
+                                        <p>Psikologi</p>
+                                        <p>Bendahara 1</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6 col-lg-4 member-card">
+                            <div class="card">
+                                <div class="card-body text-center">
+                                    <img src="path/to/photo.jpg" alt="Donny Dwi Septian" class="member-photo">
+                                    <div class="member-name">Donny Dwi Septian</div>
+                                    <div class="details">
+                                        <p>21416226201222</p>
+                                        <p>Teknik Industri</p>
+                                        <p>Bendahara 2</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SIE Acara -->
+            <div class="card mb-3">
+                <div class="card-header" onclick="toggleSection('sie-acara')">
+                    <h5 class="mb-0 text-center">Seksi Acara</h5>
+                </div>
+                <div class="card-body" id="sie-acara">
+                    <div class="level">
+                        <div class="col-12 col-md-6 col-lg-4 member-card">
+                            <div class="card">
+                                <div class="card-body text-center">
+                                    <img src="path/to/photo.jpg" alt="Fierro Meioris Yandita" class="member-photo">
+                                    <div class="member-name">Fierro Meioris Yandita</div>
+                                    <div class="details">
+                                        <p>21416273201074</p>
+                                        <p>Psikologi</p>
+                                        <p>SIE Acara</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6 col-lg-4 member-card">
+                            <div class="card">
+                                <div class="card-body text-center">
+                                    <img src="path/to/photo.jpg" alt="M Ibnu Febrian" class="member-photo">
+                                    <div class="member-name">M Ibnu Febrian</div>
+                                    <div class="details">
+                                        <p>21416274201111</p>
+                                        <p>Ilmu Hukum</p>
+                                        <p>SIE Acara</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6 col-lg-4 member-card">
+                            <div class="card">
+                                <div class="card-body text-center">
+                                    <img src="path/to/photo.jpg" alt="Ahmad Amzat" class="member-photo">
+                                    <div class="member-name">Ahmad Amzat</div>
+                                    <div class="details">
+                                        <p>21416287205032</p>
+                                        <p>PPKN</p>
+                                        <p>SIE Acara</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6 col-lg-4 member-card">
+                            <div class="card">
+                                <div class="card-body text-center">
+                                    <img src="path/to/photo.jpg" alt="Mega Maudi" class="member-photo">
+                                    <div class="member-name">Mega Maudi</div>
+                                    <div class="details">
+                                        <p>21416261201302</p>
+                                        <p>Manajemen</p>
+                                        <p>SIE Acara</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6 col-lg-4 member-card">
+                            <div class="card">
+                                <div class="card-body text-center">
+                                    <img src="path/to/photo.jpg" alt="Eka Permata Sari" class="member-photo">
+                                    <div class="member-name">Eka Permata Sari</div>
+                                    <div class="details">
+                                        <p>21416261201265</p>
+                                        <p>Manajemen</p>
+                                        <p>SIE Acara</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SIE Kominfo -->
+            <div class="card mb-3">
+                <div class="card-header" onclick="toggleSection('sie-kominfo')">
+                    <h5 class="mb-0 text-center">Seksi Kominfo</h5>
+                </div>
+                <div class="card-body" id="sie-kominfo">
+                    <div class="level">
+                        <div class="col-12 col-md-6 col-lg-4 member-card">
+                            <div class="card">
+                                <div class="card-body text-center">
+                                    <img src="path/to/photo.jpg" alt="Tresna Alya Widyani" class="member-photo">
+                                    <div class="member-name">Tresna Alya Widyani</div>
+                                    <div class="details">
+                                        <p>21416286206056</p>
+                                        <p>PGSD</p>
+                                        <p>SIE Kominfo</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6 col-lg-4 member-card">
+                            <div class="card">
+                                <div class="card-body text-center">
+                                    <img src="path/to/photo.jpg" alt="Nurhalimah" class="member-photo">
+                                    <div class="member-name">Nurhalimah</div>
+                                    <div class="details">
+                                        <p>21416248201005</p>
+                                        <p>Farmasi</p>
+                                        <p>SIE Kominfo</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6 col-lg-4 member-card">
+                            <div class="card">
+                                <div class="card-body text-center">
+                                    <img src="path/to/photo.jpg" alt="Salma Azkia Zahra" class="member-photo">
+                                    <div class="member-name">Salma Azkia Zahra</div>
+                                    <div class="details">
+                                        <p>21416255201230</p>
+                                        <p>Teknik Informatika</p>
+                                        <p>SIE Kominfo</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SIE Logistik -->
+            <div class="card mb-3">
+                <div class="card-header" onclick="toggleSection('sie-logistik')">
+                    <h5 class="mb-0 text-center">Seksi Logistik</h5>
+                </div>
+                <div class="card-body" id="sie-logistik">
+                    <div class="level">
+                        <div class="col-12 col-md-6 col-lg-4 member-card">
+                            <div class="card">
+                                <div class="card-body text-center">
+                                    <img src="path/to/photo.jpg" alt="Vikha Tri Vicika" class="member-photo">
+                                    <div class="member-name">Vikha Tri Vicika</div>
+                                    <div class="details">
+                                        <p>21416255201060</p>
+                                        <p>Teknik Informatika</p>
+                                        <p>SIE Logistik</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6 col-lg-4 member-card">
+                            <div class="card">
+                                <div class="card-body text-center">
+                                    <img src="path/to/photo.jpg" alt="Reonaldi Andress" class="member-photo">
+                                    <div class="member-name">Reonaldi Andress</div>
+                                    <div class="details">
+                                        <p>20416261201486</p>
+                                        <p>Manajemen</p>
+                                        <p>SIE Logistik</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div class="row justify-content-center">
-      <div class="col-md-6" id="ketua">
-        <div class="card team-member">
-          <img src="../static/assets/images/IMG_20240715_130636.jpg" alt="Ketua">
-          <div class="card-body">
-            <h3 class="card-title">Nama Ketua</h3>
-            <p class="card-text">Ketua</p>
-          </div>
-        </div>
-      </div>
-    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function toggleSection(sectionId) {
+            const section = document.getElementById(sectionId);
+            const details = section.querySelectorAll('.details');
+            details.forEach(detail => {
+                detail.style.display = (detail.style.display === 'none' || detail.style.display === '') ? 'block' : 'none';
+            });
+        }
 
-    <div class="row">
-      <div class="col-md-6" id="wakil">
-        <div class="card team-member">
-          <img src="../static/assets/images/IMG_20240715_130636.jpg" alt="Wakil Ketua">
-          <div class="card-body">
-            <h3 class="card-title">Nama Wakil Ketua</h3>
-            <p class="card-text">Wakil Ketua</p>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-6" id="sekretaris1">
-        <div class="card team-member">
-          <img src="../static/assets/images/IMG_20240715_130636.jpg" alt="Sekretaris 1">
-          <div class="card-body">
-            <h3 class="card-title">Nama Sekretaris 1</h3>
-            <p class="card-text">Sekretaris 1</p>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-6" id="sekretaris2">
-        <div class="card team-member">
-          <img src="../static/assets/images/IMG_20240715_130636.jpg" alt="Sekretaris 2">
-          <div class="card-body">
-            <h3 class="card-title">Nama Sekretaris 2</h3>
-            <p class="card-text">Sekretaris 2</p>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-6" id="bendahara1">
-        <div class="card team-member">
-          <img src="../static/assets/images/IMG_20240715_130636.jpg" alt="Bendahara 1">
-          <div class="card-body">
-            <h3 class="card-title">Nama Bendahara 1</h3>
-            <p class="card-text">Bendahara 1</p>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-6" id="bendahara2">
-        <div class="card team-member">
-          <img src="../static/assets/images/IMG_20240715_130636.jpg" alt="Bendahara 2">
-          <div class="card-body">
-            <h3 class="card-title">Nama Bendahara 2</h3>
-            <p class="card-text">Bendahara 2</p>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-md-4" id="seksiacara1">
-        <div class="card team-member">
-          <img src="../static/assets/images/IMG_20240715_130636.jpg" alt="Seksi Acara 1">
-          <div class="card-body">
-            <h3 class="card-title">Nama Seksi Acara 1</h3>
-            <p class="card-text">Seksi Acara</p>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-4" id="seksiacara2">
-        <div class="card team-member">
-          <img src="../static/assets/images/IMG_20240715_130636.jpg" alt="Seksi Acara 2">
-          <div class="card-body">
-            <h3 class="card-title">Nama Seksi Acara 2</h3>
-            <p class="card-text">Seksi Acara</p>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-4" id="seksiacara3">
-        <div class="card team-member">
-          <img src="../static/assets/images/IMG_20240715_130636.jpg" alt="Seksi Acara 3">
-          <div class="card-body">
-            <h3 class="card-title">Nama Seksi Acara 3</h3>
-            <p class="card-text">Seksi Acara</p>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-4" id="seksiacara4">
-        <div class="card team-member">
-          <img src="../static/assets/images/IMG_20240715_130636.jpg" alt="Seksi Acara 4">
-          <div class="card-body">
-            <h3 class="card-title">Nama Seksi Acara 4</h3>
-            <p class="card-text">Seksi Acara</p>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-4" id="seksiacara5">
-        <div class="card team-member">
-          <img src="../static/assets/images/IMG_20240715_130636.jpg" alt="Seksi Acara 5">
-          <div class="card-body">
-            <h3 class="card-title">Nama Seksi Acara 5</h3>
-            <p class="card-text">Seksi Acara</p>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-md-6" id="seksikominfo1">
-        <div class="card team-member">
-          <img src="../static/assets/images/IMG_20240715_130636.jpg" alt="Seksi Kominfo 1">
-          <div class="card-body">
-            <h3 class="card-title">Nama Seksi Kominfo 1</h3>
-            <p class="card-text">Seksi Kominfo</p>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-6" id="seksikominfo2">
-        <div class="card team-member">
-          <img src="../static/assets/images/IMG_20240715_130636.jpg" alt="Seksi Kominfo 2">
-          <div class="card-body">
-            <h3 class="card-title">Nama Seksi Kominfo 2</h3>
-            <p class="card-text">Seksi Kominfo</p>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-md-6" id="seksilogistik1">
-        <div class="card team-member">
-          <img src="../static/assets/images/IMG_20240715_130636.jpg" alt="Seksi Logistik 1">
-          <div class="card-body">
-            <h3 class="card-title">Nama Seksi Logistik 1</h3>
-            <p class="card-text">Seksi Logistik</p>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-6" id="seksilogistik2">
-        <div class="card team-member">
-          <img src="../static/assets/images/IMG_20240715_130636.jpg" alt="Seksi Logistik 2">
-          <div class="card-body">
-            <h3 class="card-title">Nama Seksi Logistik 2</h3>
-            <p class="card-text">Seksi Logistik</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jsPlumb/2.15.6/jsplumb.min.js"></script>
-  <script>
-    jsPlumb.ready(function () {
-      var instance = jsPlumb.getInstance({
-        Endpoint: ["Dot", { radius: 2 }],
-        Connector: "Straight",
-        PaintStyle: { stroke: "#456", strokeWidth: 2 },
-        HoverPaintStyle: { stroke: "#1e8151", strokeWidth: 2 },
-        Container: "container"
-      });
-
-      var sourceAnchors = [
-        "BottomCenter"
-      ];
-
-      var targetAnchors = [
-        "TopCenter"
-      ];
-
-      instance.doWhileSuspended(function () {
-        var connections = [
-          { source: "dpl", target: "ketua", anchors: [sourceAnchors[0], targetAnchors[0]] },
-          { source: "ketua", target: "wakil", anchors: [sourceAnchors[0], targetAnchors[0]] },
-          { source: "wakil", target: "sekretaris1", anchors: [sourceAnchors[0], targetAnchors[0]] },
-          { source: "wakil", target: "sekretaris2", anchors: [sourceAnchors[0], targetAnchors[0]] },
-          { source: "wakil", target: "bendahara1", anchors: [sourceAnchors[0], targetAnchors[0]] },
-          { source: "wakil", target: "bendahara2", anchors: [sourceAnchors[0], targetAnchors[0]] },
-          { source: "wakil", target: "seksiacara1", anchors: [sourceAnchors[0], targetAnchors[0]] },
-          { source: "wakil", target: "seksiacara2", anchors: [sourceAnchors[0], targetAnchors[0]] },
-          { source: "wakil", target: "seksiacara3", anchors: [sourceAnchors[0], targetAnchors[0]] },
-          { source: "wakil", target: "seksiacara4", anchors: [sourceAnchors[0], targetAnchors[0]] },
-          { source: "wakil", target: "seksiacara5", anchors: [sourceAnchors[0], targetAnchors[0]] },
-          { source: "wakil", target: "seksikominfo1", anchors: [sourceAnchors[0], targetAnchors[0]] },
-          { source: "wakil", target: "seksikominfo2", anchors: [sourceAnchors[0], targetAnchors[0]] },
-          { source: "wakil", target: "seksilogistik1", anchors: [sourceAnchors[0], targetAnchors[0]] },
-          { source: "wakil", target: "seksilogistik2", anchors: [sourceAnchors[0], targetAnchors[0]] }
-        ];
-
-        connections.forEach(function (conn) {
-          instance.connect(conn);
+        // Initialize all details to be hidden
+        document.addEventListener('DOMContentLoaded', () => {
+            const details = document.querySelectorAll('.details');
+            details.forEach(detail => detail.style.display = 'none');
         });
-      });
-
-      jsPlumb.fire("jsPlumbDemoLoaded", instance);
-    });
-  </script>
+    </script>
 </body>
 
 </html>

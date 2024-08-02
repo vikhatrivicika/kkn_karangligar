@@ -85,10 +85,8 @@ def index():
             profile['kepala_desa_tmpo'] = json.loads(profile['kepala_desa_tmpo'])
             profile['kantor_tmpo'] = json.loads(profile['kantor_tmpo'])
 
-
         return render_template('index.html', posts=posts, data=data, laporan=laporan, profil=profile)
     return "Database connection error"
-
 
 @app.route('/form_page/<int:id>', methods=['GET', 'POST'])
 def form_page(id):
@@ -125,8 +123,11 @@ def form_page(id):
                            ('', id, form_data_json))
             db.commit()
 
+            # Get the new row ID (code)
+            code = cursor.lastrowid
+
             # Generate PDF
-            pdf_id = cursor.lastrowid
+            pdf_id = code
             output_folder = app.config['UPLOAD_FOLDER_HASIL']
             new_filename = f"{nama_surat}_{pdf_id}.pdf"
             pdf_path = generate_pdf_from_data(pdf_id, pdf_template_path, output_folder, new_filename)
@@ -136,11 +137,10 @@ def form_page(id):
             cursor.execute("UPDATE tbl_t_pdf SET file_ttp = %s WHERE id_ttp = %s", (filename, pdf_id))
             db.commit()
 
-            return redirect(url_for('index'))
+            return render_template('form_page.html', fields=fields, nama_surat=nama_surat, kode=code, show_modal=True)
 
-        return render_template('form_page.html', fields=fields, nama_surat=nama_surat)
+        return render_template('form_page.html', fields=fields, nama_surat=nama_surat, kode=None, show_modal=False)
     return "Database connection error"
-
 
 @app.route('/blog/<int:id>')
 def blog(id):
@@ -193,6 +193,7 @@ def informasi(id):
 
             return render_template('informasi.html', post=post, columns=columns, search_performed=False)
     return "Database connection error"
+
 @app.route('/admin', methods=['GET', 'POST'])
 def admin():
     if check_session_timeout() and 'loggedin' in session:
@@ -294,38 +295,44 @@ def admin():
                     db.commit()
                     flash('Profil berhasil diperbarui!', 'success')
                     return redirect(url_for('admin'))
-                
-                # Handle filtering for PDFs
-                else:
-                    query = """
-                        SELECT pdf.id_ttp, pdf.file_ttp, laporan.judul_tmla, pdf.created_time_ttp
-                        FROM tbl_t_pdf pdf 
-                        JOIN tbl_m_laporan laporan ON pdf.id_tmla = laporan.id_tmla
-                    """
-                    filters = []
-                    judul_laporan = request.form.get('judul_laporan')
-                    start_date = request.form.get('start_date')
-                    end_date = request.form.get('end_date')
 
-                    if judul_laporan:
-                        filters.append(f"pdf.id_tmla = {judul_laporan}")
-                    if start_date and end_date:
-                        filters.append(f"pdf.created_time_ttp BETWEEN '{start_date}' AND '{end_date}'")
+            # Handle filtering for PDFs (and any GET requests)
+            query = """
+                SELECT pdf.id_ttp, pdf.file_ttp, laporan.judul_tmla, pdf.created_time_ttp
+                FROM tbl_t_pdf pdf 
+                JOIN tbl_m_laporan laporan ON pdf.id_tmla = laporan.id_tmla
+            """
+            filters = []
+            judul_laporan = request.form.get('judul_laporan') if request.method == 'POST' else request.args.get('judul_laporan')
+            start_date = request.form.get('start_date') if request.method == 'POST' else request.args.get('start_date')
+            id_ttp = request.form.get('id_ttp') if request.method == 'POST' else request.args.get('id_ttp')
 
-                    if filters:
-                        query += " WHERE " + " AND ".join(filters)
+            params = []
+            if id_ttp:
+                filters.append("pdf.id_ttp = %s")
+                params.append(id_ttp)
+            if judul_laporan and start_date:
+                filters.append("pdf.id_tmla = %s AND DATE(pdf.created_time_ttp) = %s")
+                params.extend([judul_laporan, start_date])
+            elif judul_laporan:
+                filters.append("pdf.id_tmla = %s")
+                params.append(judul_laporan)
+            elif start_date:
+                filters.append("DATE(pdf.created_time_ttp) = %s")
+                params.append(start_date)
 
-                    cursor.execute(query)
-                    pdfs = cursor.fetchall()
-            else:
-                # Default query to fetch all data
-                query = """
-                    SELECT pdf.id_ttp, pdf.file_ttp, laporan.judul_tmla, pdf.created_time_ttp
-                    FROM tbl_t_pdf pdf 
-                    JOIN tbl_m_laporan laporan ON pdf.id_tmla = laporan.id_tmla
-                """
-                cursor.execute(query)
-                pdfs = cursor.fetchall()
+            if filters:
+                query += " WHERE " + " AND ".join(filters)
+
+            query += f" ORDER BY pdf.created_time_ttp {sort_order} LIMIT %s OFFSET %s"
+            params.extend([per_page, offset])
+
+            cursor.execute(query, tuple(params))
+            pdfs = cursor.fetchall()
+
+            cursor.execute("SELECT COUNT(*) as total FROM tbl_t_pdf")
+            total_pdfs = cursor.fetchone()['total']
+            total_pages_pdfs = (total_pdfs + per_page - 1) // per_page
 
             # Fetch unique judul_laporan values for the filter dropdown
             cursor.execute("SELECT id_tmla, judul_tmla FROM tbl_m_laporan")
@@ -334,7 +341,7 @@ def admin():
             # Fetch posts with pagination
             query_posts = f"""
                 SELECT * FROM tbl_t_post WHERE delected_ttp IS NULL
-                ORDER BY created_ttp {sort_order}
+                ORDER BY created_time_ttp {sort_order}
                 LIMIT %s OFFSET %s
             """
             cursor.execute(query_posts, (per_page, offset))
@@ -346,7 +353,7 @@ def admin():
             # Fetch labels with pagination
             query_labels = f"""
                 SELECT * FROM tbl_m_label WHERE delected_tml IS NULL
-                ORDER BY created_tml {sort_order}
+                ORDER BY created_time_tml {sort_order}
                 LIMIT %s OFFSET %s
             """
             cursor.execute(query_labels, (per_page, offset))
@@ -358,7 +365,7 @@ def admin():
             # Fetch data with pagination
             query_data = f"""
                 SELECT * FROM tbl_m_data WHERE delected_tmd IS NULL
-                ORDER BY created_tmd {sort_order}
+                ORDER BY created_time_tmd {sort_order}
                 LIMIT %s OFFSET %s
             """
             cursor.execute(query_data, (per_page, offset))
@@ -370,7 +377,7 @@ def admin():
             # Fetch laporan with pagination
             query_laporan = f"""
                 SELECT * FROM tbl_m_laporan WHERE delected_tmla IS NULL
-                ORDER BY created_tmla {sort_order}
+                ORDER BY created_time_tmla {sort_order}
                 LIMIT %s OFFSET %s
             """
             cursor.execute(query_laporan, (per_page, offset))
@@ -378,21 +385,6 @@ def admin():
             cursor.execute("SELECT COUNT(*) as total FROM tbl_m_laporan WHERE delected_tmla IS NULL")
             total_laporan = cursor.fetchone()['total']
             total_pages_laporan = (total_laporan + per_page - 1) // per_page
-
-            query_pdf = f"""
-                SELECT tbl_t_pdf.*, tbl_m_laporan.judul_tmla
-                FROM tbl_t_pdf
-                JOIN tbl_m_laporan ON tbl_t_pdf.id_tmla = tbl_m_laporan.id_tmla
-                ORDER BY tbl_t_pdf.created_time_ttp {sort_order}
-                LIMIT %s OFFSET %s
-            """
-
-            cursor.execute(query_pdf, (per_page, offset))
-            pdf = cursor.fetchall()
-            cursor.execute("SELECT COUNT(*) as total FROM tbl_t_pdf")
-            total_pdf = cursor.fetchone()['total']
-            total_pages_pdf = (total_pdf + per_page - 1) // per_page
-
 
             # Fetch profile
             cursor.execute("SELECT * FROM tbl_m_profil WHERE id_tmpo=1")
@@ -402,13 +394,12 @@ def admin():
                 profil[0]['kantor_tmpo'] = json.loads(profil[0]['kantor_tmpo'])
 
             return render_template('admin/index.html', 
-                                   posts=posts, labels=labels, data=data, laporan=laporan, pdf=pdf, 
+                                   posts=posts, labels=labels, data=data, laporan=laporan, pdfs=pdfs, 
                                    judul_laporan_values=judul_laporan_values, profil=profil, 
                                    page=page, total_pages_posts=total_pages_posts, total_pages_labels=total_pages_labels, 
-                                   total_pages_data=total_pages_data, total_pages_laporan=total_pages_laporan, total_pages_pdf=total_pages_pdf, sort=sort, per_page = per_page)
+                                   total_pages_data=total_pages_data, total_pages_laporan=total_pages_laporan, total_pages_pdfs=total_pages_pdfs, sort=sort, per_page=per_page)
         return "Database connection error"
     return redirect(url_for('login'))
-
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -585,7 +576,6 @@ def uploaded_post_pdf(filename):
 @app.route('/uploads/profil/<filename>')
 def uploaded_profil(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER_PROFIL'], filename, as_attachment=True)
-
 
 @app.route('/admin/update_active/<int:id>', methods=['POST'])
 def update_active(id):
@@ -766,7 +756,7 @@ def save_detail_laporan():
             db.commit()
             return jsonify(success=True)
         return jsonify(success=False, error="Database connection error")
-    return jsonify(success=False, error="Tidak terautentikasi")
+    return jsonify(success(False, error="Tidak terautentikasi"))
 
 def generate_pdf_from_data(pdf_id, template_path, output_folder, new_filename):
     db = get_db_connection()
@@ -792,18 +782,23 @@ def generate_pdf_from_data(pdf_id, template_path, output_folder, new_filename):
                     x_points = field.get('position', {}).get('x', 0)
                     y_points = field.get('position', {}).get('y', 0)
                     fontsize = field.get('font_size', 12)
+                    letter_spacing = field.get('letter_spacing', 0)
 
                     # Ensure numerical values are correctly typed
                     try:
                         x_points = float(x_points)
                         y_points = float(y_points)
                         fontsize = float(fontsize)
+                        letter_spacing = float(letter_spacing)
                     except ValueError as e:
                         print(f"ValueError: {e}")
                         continue
 
-                    print(f"Inserting text for field '{field['name']}' at position ({x_points}, {y_points}) with fontsize {fontsize}")
-                    page.insert_text((x_points, y_points), text, fontname='helv', fontsize=fontsize)
+                    # Split text into characters and insert each character with letter spacing
+                    for i, char in enumerate(text):
+                        x_offset = x_points + i * (fontsize + letter_spacing)
+                        print(f"Inserting char '{char}' for field '{field['name']}' at position ({x_offset}, {y_points}) with fontsize {fontsize}")
+                        page.insert_text((x_offset, y_points), char, fontname='helv', fontsize=fontsize)
 
                 elif field['type'] == 'select':
                     # Always insert 'X' in bold regardless of the selected option value
@@ -858,11 +853,6 @@ def generate_pdf_from_data(pdf_id, template_path, output_folder, new_filename):
 
     return None
 
-
-
-
-
-
 @app.route('/admin/tbl_t_pdf', methods=['GET', 'POST'])
 def admin_tbl_t_pdf():
     if check_session_timeout() and 'loggedin' in session:
@@ -882,12 +872,21 @@ def admin_tbl_t_pdf():
             if request.method == 'POST':
                 judul_laporan = request.form.get('judul_laporan')
                 start_date = request.form.get('start_date')
-                end_date = request.form.get('end_date')
                 
+                # Validate judul_laporan
                 if judul_laporan:
-                    filters.append(f"pdf.id_tmla = {judul_laporan}")
-                if start_date and end_date:
-                    filters.append(f"pdf.created_time_ttp BETWEEN '{start_date}' AND '{end_date}'")
+                    cursor.execute("SELECT id_tmla FROM tbl_m_laporan WHERE judul_tmla = %s", (judul_laporan,))
+                    result = cursor.fetchone()
+                    if result:
+                        filters.append(f"pdf.id_tmla = {result['id_tmla']}")
+                
+                # Validate and format start_date
+                if start_date:
+                    try:
+                        datetime.strptime(start_date, '%Y-%m-%d')  # Ensure it's a valid date format
+                        filters.append(f"DATE(pdf.created_time_ttp) = '{start_date}'")
+                    except ValueError:
+                        pass  # Invalid date format; ignore the filter
                 
                 if filters:
                     query += " WHERE " + " AND ".join(filters)
@@ -953,7 +952,6 @@ def edit_pdf(id):
         return "Database connection error"
     return redirect(url_for('login'))
 
-
 @app.route('/admin/change_password', methods=['GET', 'POST'])
 def change_password():
     if check_session_timeout() and 'loggedin' in session:
@@ -984,7 +982,6 @@ def change_password():
                     flash('Current password is incorrect!', 'danger')
         return render_template('admin/change_password.html')
     return redirect(url_for('login'))
-
 
 @app.route('/profil_desa')
 def profil_desa():
