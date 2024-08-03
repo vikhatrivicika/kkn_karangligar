@@ -5,18 +5,34 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Struktur Organisasi</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../static/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../static/assets/css/fontawesome.css">
+    <link rel="stylesheet" href="../static/assets/css/templatemo-tale-seo-agency.css">
+    <link rel="stylesheet" href="../static/assets/css/owl.css">
+    <link rel="stylesheet" href="../static/assets/css/animate.css">
+    <link rel="stylesheet" href="https://unpkg.com/swiper@7/swiper-bundle.min.css" />
     <style>
         .member-photo {
-            width: 100px;
-            height: 100px;
+            width: 100%;
+            height: auto;
             object-fit: cover;
-            border-radius: 50%;
+            border-bottom-left-radius: 40%;
+            border-bottom-right-radius: 40%;
             margin-bottom: 10px;
+            transition: transform 0.3s;
+        }
+
+        .member-photo:hover {
+            transform: scale(1.1);
         }
 
         .member-card {
-            margin-bottom: 15px;
+            margin: 5px;
+            transition: transform 0.3s;
+        }
+
+        .member-card:hover {
+            transform: scale(1.05);
         }
 
         .card-header {
@@ -61,33 +77,68 @@
             margin-bottom: 20px;
             flex-wrap: wrap;
         }
+
+        .card-body {
+            background: linear-gradient(135deg, #ffffff, #f7fff6);
+            border-radius: 10px;
+        }
+
+        @media (max-width: 576px) {
+            .member-photo {
+                width: 100%;
+                height: auto;
+            }
+        }
     </style>
 </head>
 
 <body>
     <div class="container mt-5">
         <div class="text-center mb-4">
-            <div class="logos">
+            <div class="logos animate__animated animate__bounceIn">
                 <img src="logo1.png" alt="Logo 1" class="logo">
                 <img src="logo2.png" alt="Logo 2" class="logo">
                 <img src="logo3.png" alt="Logo 3" class="logo">
                 <img src="logo4.png" alt="Logo 4" class="logo">
                 <img src="logo5.png" alt="Logo 5" class="logo">
             </div>
-            <h2>Struktur Organisasi</h2>
+            <h2 class="animate__animated animate__fadeInDown">Struktur Organisasi KKN Karangligar 2024</h2>
         </div>
         <div class="org-chart">
+            <!-- Pembimbing Lapangan -->
+            <div class="card mb-3 animate__animated animate__fadeIn">
+                <div class="card-header" onclick="toggleSection('pembimbing')">
+                    <h5 class="mb-0 text-center">Pembimbing Lapangan</h5>
+                </div>
+                <div class="card-body" id="pembimbing">
+                    <div class="level">
+                        <div class="col-12 col-md-12 col-lg-12 center member-card">
+                            <div class="card">
+                                <div class="card-body text-center animate__animated animate__zoomIn">
+                                    <img src="../static/assets/organisasi/17.png" alt="Pembimbing Lapangan" class="member-photo img-fluid">
+                                    <div class="member-name">Nama Pembimbing</div>
+                                    <div class="details">
+                                        <p>Identitas Pembimbing</p>
+                                        <p>Jabatan Pembimbing</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Ketua dan Wakil Ketua -->
-            <div class="card mb-3">
+            <div class="card mb-3 animate__animated animate__fadeIn" style="animation-delay: 0.2s;">
                 <div class="card-header" onclick="toggleSection('ketua')">
                     <h5 class="mb-0 text-center">Ketua dan Wakil Ketua</h5>
                 </div>
                 <div class="card-body" id="ketua">
                     <div class="level">
-                        <div class="col-12 col-md-6 col-lg-4 member-card">
+                        <div class="col-12 col-md-6 col-lg-6 member-card">
                             <div class="card">
-                                <div class="card-body text-center">
-                                    <img src="pas.jpg" alt="Sandra Juliyanti" class="member-photo">
+                                <div class="card-body text-center animate__animated animate__zoomIn">
+                                    <img src="../static/assets/organisasi/1.png" alt="Sandra Juliyanti" class="member-photo img-fluid">
                                     <div class="member-name">Sandra Juliyanti</div>
                                     <div class="details">
                                         <p>21416262201062</p>
@@ -97,10 +148,10 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-12 col-md-6 col-lg-4 member-card">
+                        <div class="col-12 col-md-6 col-lg-6 member-card">
                             <div class="card">
-                                <div class="card-body text-center">
-                                    <img src="pas.jpg" alt="Zulvan Lahiya Apriana" class="member-photo">
+                                <div class="card-body text-center animate__animated animate__zoomIn" style="animation-delay: 0.3s;">
+                                    <img src="../static/assets/organisasi/2.png" alt="Zulvan Lahiya Apriana" class="member-photo img-fluid">
                                     <div class="member-name">Zulvan Lahiya Apriana</div>
                                     <div class="details">
                                         <p>21416221201034</p>
@@ -115,16 +166,16 @@
             </div>
 
             <!-- Sekretaris -->
-            <div class="card mb-3">
+            <div class="card mb-3 animate__animated animate__fadeIn" style="animation-delay: 0.4s;">
                 <div class="card-header" onclick="toggleSection('sekretaris')">
                     <h5 class="mb-0 text-center">Sekretaris</h5>
                 </div>
                 <div class="card-body" id="sekretaris">
                     <div class="level">
-                        <div class="col-12 col-md-6 col-lg-4 member-card">
+                        <div class="col-12 col-md-6 col-lg-6 member-card">
                             <div class="card">
-                                <div class="card-body text-center">
-                                    <img src="path/to/photo.jpg" alt="Fathin Putri Azizah" class="member-photo">
+                                <div class="card-body text-center animate__animated animate__zoomIn" style="animation-delay: 0.5s;">
+                                    <img src="../static/assets/organisasi/4.png" alt="Fathin Putri Azizah" class="member-photo img-fluid">
                                     <div class="member-name">Fathin Putri Azizah</div>
                                     <div class="details">
                                         <p>21416257201017</p>
@@ -134,10 +185,10 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-12 col-md-6 col-lg-4 member-card">
+                        <div class="col-12 col-md-6 col-lg-6 member-card">
                             <div class="card">
-                                <div class="card-body text-center">
-                                    <img src="path/to/photo.jpg" alt="Imelda Amelia Widiastuti" class="member-photo">
+                                <div class="card-body text-center animate__animated animate__zoomIn" style="animation-delay: 0.6s;">
+                                    <img src="../static/assets/organisasi/3.png" alt="Imelda Amelia Widiastuti" class="member-photo img-fluid">
                                     <div class="member-name">Imelda Amelia Widiastuti</div>
                                     <div class="details">
                                         <p>21416261201122</p>
@@ -152,16 +203,16 @@
             </div>
 
             <!-- Bendahara -->
-            <div class="card mb-3">
+            <div class="card mb-3 animate__animated animate__fadeIn" style="animation-delay: 0.7s;">
                 <div class="card-header" onclick="toggleSection('bendahara')">
                     <h5 class="mb-0 text-center">Bendahara</h5>
                 </div>
                 <div class="card-body" id="bendahara">
                     <div class="level">
-                        <div class="col-12 col-md-6 col-lg-4 member-card">
+                        <div class="col-12 col-md-6 col-lg-6 member-card">
                             <div class="card">
-                                <div class="card-body text-center">
-                                    <img src="path/to/photo.jpg" alt="Azzahra Darojatu Rafiah" class="member-photo">
+                                <div class="card-body text-center animate__animated animate__zoomIn" style="animation-delay: 0.8s;">
+                                    <img src="../static/assets/organisasi/5.png" alt="Azzahra Darojatu Rafiah" class="member-photo img-fluid">
                                     <div class="member-name">Azzahra Darojatu Rafiah</div>
                                     <div class="details">
                                         <p>21416273201055</p>
@@ -171,10 +222,10 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-12 col-md-6 col-lg-4 member-card">
+                        <div class="col-12 col-md-6 col-lg-6 member-card">
                             <div class="card">
-                                <div class="card-body text-center">
-                                    <img src="path/to/photo.jpg" alt="Donny Dwi Septian" class="member-photo">
+                                <div class="card-body text-center animate__animated animate__zoomIn" style="animation-delay: 0.9s;">
+                                    <img src="../static/assets/organisasi/6.png" alt="Donny Dwi Septian" class="member-photo img-fluid">
                                     <div class="member-name">Donny Dwi Septian</div>
                                     <div class="details">
                                         <p>21416226201222</p>
@@ -189,7 +240,7 @@
             </div>
 
             <!-- SIE Acara -->
-            <div class="card mb-3">
+            <div class="card mb-3 animate__animated animate__fadeIn" style="animation-delay: 1s;">
                 <div class="card-header" onclick="toggleSection('sie-acara')">
                     <h5 class="mb-0 text-center">Seksi Acara</h5>
                 </div>
@@ -197,8 +248,8 @@
                     <div class="level">
                         <div class="col-12 col-md-6 col-lg-4 member-card">
                             <div class="card">
-                                <div class="card-body text-center">
-                                    <img src="path/to/photo.jpg" alt="Fierro Meioris Yandita" class="member-photo">
+                                <div class="card-body text-center animate__animated animate__zoomIn" style="animation-delay: 1.1s;">
+                                    <img src="../static/assets/organisasi/10.png" alt="Fierro Meioris Yandita" class="member-photo img-fluid">
                                     <div class="member-name">Fierro Meioris Yandita</div>
                                     <div class="details">
                                         <p>21416273201074</p>
@@ -210,8 +261,8 @@
                         </div>
                         <div class="col-12 col-md-6 col-lg-4 member-card">
                             <div class="card">
-                                <div class="card-body text-center">
-                                    <img src="path/to/photo.jpg" alt="M Ibnu Febrian" class="member-photo">
+                                <div class="card-body text-center animate__animated animate__zoomIn" style="animation-delay: 1.2s;">
+                                    <img src="../static/assets/organisasi/11.png" alt="M Ibnu Febrian" class="member-photo img-fluid">
                                     <div class="member-name">M Ibnu Febrian</div>
                                     <div class="details">
                                         <p>21416274201111</p>
@@ -223,8 +274,8 @@
                         </div>
                         <div class="col-12 col-md-6 col-lg-4 member-card">
                             <div class="card">
-                                <div class="card-body text-center">
-                                    <img src="path/to/photo.jpg" alt="Ahmad Amzat" class="member-photo">
+                                <div class="card-body text-center animate__animated animate__zoomIn" style="animation-delay: 1.3s;">
+                                    <img src="../static/assets/organisasi/7.png" alt="Ahmad Amzat" class="member-photo img-fluid">
                                     <div class="member-name">Ahmad Amzat</div>
                                     <div class="details">
                                         <p>21416287205032</p>
@@ -236,8 +287,8 @@
                         </div>
                         <div class="col-12 col-md-6 col-lg-4 member-card">
                             <div class="card">
-                                <div class="card-body text-center">
-                                    <img src="path/to/photo.jpg" alt="Mega Maudi" class="member-photo">
+                                <div class="card-body text-center animate__animated animate__zoomIn" style="animation-delay: 1.4s;">
+                                    <img src="../static/assets/organisasi/9.png" alt="Mega Maudi" class="member-photo img-fluid">
                                     <div class="member-name">Mega Maudi</div>
                                     <div class="details">
                                         <p>21416261201302</p>
@@ -249,8 +300,8 @@
                         </div>
                         <div class="col-12 col-md-6 col-lg-4 member-card">
                             <div class="card">
-                                <div class="card-body text-center">
-                                    <img src="path/to/photo.jpg" alt="Eka Permata Sari" class="member-photo">
+                                <div class="card-body text-center animate__animated animate__zoomIn" style="animation-delay: 1.5s;">
+                                    <img src="../static/assets/organisasi/8.png" alt="Eka Permata Sari" class="member-photo img-fluid">
                                     <div class="member-name">Eka Permata Sari</div>
                                     <div class="details">
                                         <p>21416261201265</p>
@@ -265,7 +316,7 @@
             </div>
 
             <!-- SIE Kominfo -->
-            <div class="card mb-3">
+            <div class="card mb-3 animate__animated animate__fadeIn" style="animation-delay: 1.6s;">
                 <div class="card-header" onclick="toggleSection('sie-kominfo')">
                     <h5 class="mb-0 text-center">Seksi Kominfo</h5>
                 </div>
@@ -273,8 +324,8 @@
                     <div class="level">
                         <div class="col-12 col-md-6 col-lg-4 member-card">
                             <div class="card">
-                                <div class="card-body text-center">
-                                    <img src="path/to/photo.jpg" alt="Tresna Alya Widyani" class="member-photo">
+                                <div class="card-body text-center animate__animated animate__zoomIn" style="animation-delay: 1.7s;">
+                                    <img src="../static/assets/organisasi/13.png" alt="Tresna Alya Widyani" class="member-photo img-fluid">
                                     <div class="member-name">Tresna Alya Widyani</div>
                                     <div class="details">
                                         <p>21416286206056</p>
@@ -286,8 +337,8 @@
                         </div>
                         <div class="col-12 col-md-6 col-lg-4 member-card">
                             <div class="card">
-                                <div class="card-body text-center">
-                                    <img src="path/to/photo.jpg" alt="Nurhalimah" class="member-photo">
+                                <div class="card-body text-center animate__animated animate__zoomIn" style="animation-delay: 1.8s;">
+                                    <img src="../static/assets/organisasi/12.png" alt="Nurhalimah" class="member-photo img-fluid">
                                     <div class="member-name">Nurhalimah</div>
                                     <div class="details">
                                         <p>21416248201005</p>
@@ -299,8 +350,8 @@
                         </div>
                         <div class="col-12 col-md-6 col-lg-4 member-card">
                             <div class="card">
-                                <div class="card-body text-center">
-                                    <img src="path/to/photo.jpg" alt="Salma Azkia Zahra" class="member-photo">
+                                <div class="card-body text-center animate__animated animate__zoomIn" style="animation-delay: 1.9s;">
+                                    <img src="../static/assets/organisasi/14.png" alt="Salma Azkia Zahra" class="member-photo img-fluid">
                                     <div class="member-name">Salma Azkia Zahra</div>
                                     <div class="details">
                                         <p>21416255201230</p>
@@ -315,16 +366,16 @@
             </div>
 
             <!-- SIE Logistik -->
-            <div class="card mb-3">
+            <div class="card mb-3 animate__animated animate__fadeIn" style="animation-delay: 2s;">
                 <div class="card-header" onclick="toggleSection('sie-logistik')">
                     <h5 class="mb-0 text-center">Seksi Logistik</h5>
                 </div>
                 <div class="card-body" id="sie-logistik">
                     <div class="level">
-                        <div class="col-12 col-md-6 col-lg-4 member-card">
+                        <div class="col-12 col-md-6 col-lg-6 member-card">
                             <div class="card">
-                                <div class="card-body text-center">
-                                    <img src="path/to/photo.jpg" alt="Vikha Tri Vicika" class="member-photo">
+                                <div class="card-body text-center animate__animated animate__zoomIn" style="animation-delay: 2.1s;">
+                                    <img src="../static/assets/organisasi/15.png" alt="Vikha Tri Vicika" class="member-photo img-fluid">
                                     <div class="member-name">Vikha Tri Vicika</div>
                                     <div class="details">
                                         <p>21416255201060</p>
@@ -334,10 +385,10 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-12 col-md-6 col-lg-4 member-card">
+                        <div class="col-12 col-md-6 col-lg-6 member-card">
                             <div class="card">
-                                <div class="card-body text-center">
-                                    <img src="path/to/photo.jpg" alt="Reonaldi Andress" class="member-photo">
+                                <div class="card-body text-center animate__animated animate__zoomIn" style="animation-delay: 2.2s;">
+                                    <img src="../static/assets/organisasi/16.png" alt="Reonaldi Andress" class="member-photo img-fluid">
                                     <div class="member-name">Reonaldi Andress</div>
                                     <div class="details">
                                         <p>20416261201486</p>
@@ -353,7 +404,14 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Scripts -->
+    <script src="../static/vendor/jquery/jquery.min.js"></script>
+    <script src="../static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="../static/assets/js/isotope.min.js"></script>
+    <script src="../static/assets/js/owl-carousel.js"></script>
+    <script src="../static/assets/js/tabs.js"></script>
+    <script src="../static/assets/js/popup.js"></script>
+    <script src="../static/assets/js/custom.js"></script>
     <script>
         function toggleSection(sectionId) {
             const section = document.getElementById(sectionId);

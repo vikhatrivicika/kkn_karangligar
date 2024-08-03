@@ -1051,5 +1051,10 @@ def generate_new_filename(pdf_record):
     new_filename = f"{base_filename}-edit-{timestamp}{file_extension}"
     return new_filename
 
+@app.route('/struktur_organisasi')
+def struktur_organisasi():
+    return render_template('struktur_organisasi.html')
+
+
 if __name__ == '__main__':
     app.run(debug=True)
