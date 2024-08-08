@@ -71,7 +71,9 @@
                             <select class="form-control" name="types[]" onchange="toggleOptions(this)" required>
                                 <option value="text" ${fieldData.type === 'text' ? 'selected' : ''}>Text</option>
                                 <option value="select" ${fieldData.type === 'select' ? 'selected' : ''}>Select</option>
+                                <option value="select-x" ${fieldData.type === 'select-x' ? 'selected' : ''}>Select-X</option>
                                 <option value="date" ${fieldData.type === 'date' ? 'selected' : ''}>Date</option>
+                                <option value="tanggal-date" ${fieldData.type === 'tanggal-date' ? 'selected' : ''}>Tanggal-Date</option>
                             </select>
                         </div>
                         <div class="form-group maxLengthContainer" style="display: ${fieldData.type === 'text' ? 'block' : 'none'};">
@@ -98,7 +100,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="optionsContainer" style="display: ${fieldData.type === 'select' ? 'block' : 'none'};">
+                <div class="optionsContainer" style="display: ${['select', 'select-x'].includes(fieldData.type) ? 'block' : 'none'};">
                     <label>Options:</label>
                     <div class="optionsFields">
                         ${(fieldData.options || []).map(option => `
@@ -146,7 +148,7 @@
             const positionXContainer = field.querySelector('.positionXContainer');
             const positionYContainer = field.querySelector('.positionYContainer');
 
-            if (selectElement.value === 'select') {
+            if (['select', 'select-x'].includes(selectElement.value)) {
                 optionsContainer.style.display = 'block';
                 maxLengthContainer.style.display = 'none';
                 fontSizeContainer.style.display = 'none';
@@ -160,7 +162,7 @@
                 letterSpacingContainer.style.display = 'block';
                 positionXContainer.style.display = 'block';
                 positionYContainer.style.display = 'block';
-            } else if (selectElement.value === 'date') {
+            } else if (selectElement.value === 'date' || selectElement.value === 'tanggal-date') {
                 optionsContainer.style.display = 'none';
                 maxLengthContainer.style.display = 'none';
                 fontSizeContainer.style.display = 'block';
@@ -230,7 +232,7 @@
                     name: labels[i].value.toLowerCase().replace(/\s+/g, '_'),
                 };
 
-                if (field.type === 'select') {
+                if (['select', 'select-x'].includes(field.type)) {
                     field.options = [];
                     const options = optionsContainers[i].querySelectorAll('.option');
                     options.forEach(option => {

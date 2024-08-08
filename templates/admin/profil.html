@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>Admin Profile Management</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.ckeditor.com/4.16.2/standard/ckeditor.js"></script>
 </head>
 <body>
 
@@ -19,6 +20,12 @@
                         <textarea class="form-control" id="informasi_tmpo" name="informasi_tmpo" rows="3" required>{{ p.informasi_tmpo }}</textarea>
                         <div class="invalid-feedback">Please enter the informasi.</div>
                     </div>
+                    <script>
+                        CKEDITOR.replace('informasi_tmpo', {
+                            filebrowserUploadUrl: '{{ url_for("upload") }}',
+                            filebrowserUploadMethod: 'form'
+                        });
+                    </script>
 
                     <div class="form-group">
                         <label for="facebook_tmpo">Facebook</label>
@@ -37,12 +44,24 @@
                         <textarea class="form-control" id="visi_tmpo" name="visi_tmpo" rows="3" required>{{ p.visi_tmpo }}</textarea>
                         <div class="invalid-feedback">Please enter the visi.</div>
                     </div>
+                    <script>
+                        CKEDITOR.replace('visi_tmpo', {
+                            filebrowserUploadUrl: '{{ url_for("upload") }}',
+                            filebrowserUploadMethod: 'form'
+                        });
+                    </script>
 
                     <div class="form-group">
                         <label for="misi_tmpo">Misi</label>
                         <textarea class="form-control" id="misi_tmpo" name="misi_tmpo" rows="3" required>{{ p.misi_tmpo }}</textarea>
                         <div class="invalid-feedback">Please enter the misi.</div>
                     </div>
+                    <script>
+                        CKEDITOR.replace('misi_tmpo', {
+                            filebrowserUploadUrl: '{{ url_for("upload") }}',
+                            filebrowserUploadMethod: 'form'
+                        });
+                    </script>
 
                     <div class="form-group">
                         <label for="kepala_desa_foto">Foto Kepala Desa</label>

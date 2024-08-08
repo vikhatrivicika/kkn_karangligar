@@ -34,10 +34,12 @@
             const container = document.createElement('div');
             container.classList.add('form-group');
             
-            const label = document.createElement('label');
-            label.setAttribute('for', field.name);
-            label.textContent = field.label;
-            container.appendChild(label);
+            if (field.type !== 'tanggal-date') {
+                const label = document.createElement('label');
+                label.setAttribute('for', field.name);
+                label.textContent = field.label;
+                container.appendChild(label);
+            }
             
             if (field.type === 'text') {
                 const input = document.createElement('input');
@@ -48,7 +50,7 @@
                 input.maxLength = field.max_length || '';
                 input.value = data[field.name] || '';
                 container.appendChild(input);
-            } else if (field.type === 'select') {
+            } else if (field.type === 'select' || field.type === 'select-x') {
                 const select = document.createElement('select');
                 select.classList.add('form-control');
                 select.id = field.name;
@@ -65,6 +67,19 @@
                 });
 
                 container.appendChild(select);
+            } else if (field.type === 'tanggal-date') {
+                // Create a hidden input to store the current date in the specified format
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.id = field.name;
+                input.name = field.name;
+                const currentDate = new Date().toLocaleDateString('id-ID', {
+                    day: '2-digit',
+                    month: 'long',
+                    year: 'numeric'
+                });
+                input.value = currentDate;
+                container.appendChild(input);
             }
 
             return container;

@@ -95,6 +95,15 @@ h1, h2, h3, h4, h5, h6 {
 
 ul {
   margin-bottom: 0px;
+  font-size: 15px;
+  line-height: 30px;
+  color: #afafaf;
+}
+
+li {
+  font-size: 15px;
+  line-height: 30px;
+  color: #afafaf;
 }
 
 p {

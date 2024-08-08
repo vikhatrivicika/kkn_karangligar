@@ -73,11 +73,12 @@
         <div class="col-lg-12">
           <form method="POST" class="form-container" id="mainForm">
             {% for field in fields %}
+            {% if field.type != 'tanggal-date' %}
             <div class="form-group">
               <label for="{{ field.name }}">{{ field.label }}</label>
               {% if field.type == 'text' %}
               <input type="text" class="form-control" id="{{ field.name }}" name="{{ field.name }}" maxlength="{{ field.max_length }}" required>
-              {% elif field.type == 'select' %}
+              {% elif field.type == 'select' or field.type == 'select-x' %}
               <select class="form-control" id="{{ field.name }}" name="{{ field.name }}" required>
                 {% for option in field.options %}
                 <option value="{{ option.value }}">{{ option.label }}</option>
@@ -87,6 +88,7 @@
               <input type="date" class="form-control" id="{{ field.name }}" name="{{ field.name }}" required>
               {% endif %}
             </div>
+            {% endif %}
             {% endfor %}
             <button type="submit" class="btn btn-primary">Simpan</button>
           </form>
@@ -116,7 +118,7 @@
   <footer>
     <div class="container">
       <div class="col-lg-12">
-        <p>Copyright © 2024 <a href="{{ url_for('struktur_organisasi') }}">KKN Desa Karangligar 2024</a>.
+        <p>Copyright © <a href="{{ url_for('struktur_organisasi') }}">KKN Desa Karangligar 2024</a>.
 
           <br>Design: <a href="https://templatemo.com" target="_blank">TemplateMo</a> Distribution: <a href="https://themewagon.com">ThemeWagon</a>
         </p>

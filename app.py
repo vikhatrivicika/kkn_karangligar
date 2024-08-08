@@ -58,7 +58,7 @@ def check_session_timeout():
         if isinstance(login_time, str):
             login_time = datetime.fromisoformat(login_time)  # Convert string back to datetime
             elapsed_time = datetime.now(timezone.utc) - login_time
-            if elapsed_time > timedelta(hours=1):
+            if elapsed_time > timedelta(hours=8):
                 session.pop('loggedin', None)
                 session.pop('id_tmu', None)
                 session.pop('username_tmu', None)
@@ -569,7 +569,7 @@ def uploaded_file(filename):
 def uploaded_post_thumbnail(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER_POST_THUMBNAILS'], filename, as_attachment=True)
 
-@app.route('/uploads/pdf/<filename>')
+@app.route('/uploads/hasil/<filename>')
 def uploaded_post_pdf(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER_HASIL'], filename, as_attachment=True)
 
@@ -758,6 +758,7 @@ def save_detail_laporan():
         return jsonify(success=False, error="Database connection error")
     return jsonify(success(False, error="Tidak terautentikasi"))
 
+
 def generate_pdf_from_data(pdf_id, template_path, output_folder, new_filename):
     db = get_db_connection()
     if db:
@@ -794,14 +795,18 @@ def generate_pdf_from_data(pdf_id, template_path, output_folder, new_filename):
                         print(f"ValueError: {e}")
                         continue
 
-                    # Split text into characters and insert each character with letter spacing
-                    for i, char in enumerate(text):
-                        x_offset = x_points + i * (fontsize + letter_spacing)
-                        print(f"Inserting char '{char}' for field '{field['name']}' at position ({x_offset}, {y_points}) with fontsize {fontsize}")
-                        page.insert_text((x_offset, y_points), char, fontname='helv', fontsize=fontsize)
+                    # Use fitz.Font to measure character width
+                    font = fitz.Font(fontname='times-roman')
+                    
+                    # Insert text with custom letter spacing
+                    current_x = x_points
+                    for char in text:
+                        print(f"Inserting char '{char}' for field '{field['name']}' at position ({current_x}, {y_points}) with fontsize {fontsize} and letter spacing {letter_spacing}")
+                        page.insert_text((current_x, y_points), char, fontname='times-roman', fontsize=fontsize)
+                        char_width = font.text_length(char, fontsize=fontsize)  # Get the width of the character
+                        current_x += char_width + letter_spacing
 
                 elif field['type'] == 'select':
-                    # Always insert 'X' in bold regardless of the selected option value
                     if text:  # Check if there is a selected value
                         selected_option = next((option for option in field['options'] if option['value'] == text), None)
                         if selected_option:
@@ -819,6 +824,26 @@ def generate_pdf_from_data(pdf_id, template_path, output_folder, new_filename):
 
                             print(f"Inserting 'X' for option '{selected_option['label']}' at position ({option_x_points}, {option_y_points}) with fontsize {option_fontsize}")
                             page.insert_text((option_x_points, option_y_points), 'X', fontname='helv', fontsize=option_fontsize)
+
+                elif field['type'] == 'select-x':
+                    if text:  # Check if there is a selected value
+                        selected_option = next((option for option in field['options'] if option['value'] == text), None)
+                        if selected_option:
+                            option_x_points = selected_option.get('position', {}).get('x', 0)
+                            option_y_points = selected_option.get('position', {}).get('y', 0)
+                            option_fontsize = selected_option.get('font_size', 12)  # Default to 12 if not specified
+
+                            try:
+                                option_x_points = float(option_x_points)
+                                option_y_points = float(option_y_points)
+                                option_fontsize = float(option_fontsize)
+                            except ValueError as e:
+                                print(f"ValueError: {e}")
+                                continue
+
+                            # Print the selected option's value instead of 'X'
+                            print(f"Inserting '{selected_option['value']}' for option '{selected_option['label']}' at position ({option_x_points}, {option_y_points}) with fontsize {option_fontsize}")
+                            page.insert_text((option_x_points, option_y_points), selected_option['value'], fontname='helv', fontsize=option_fontsize)
 
                 elif field['type'] == 'date':
                     x_points = field.get('position', {}).get('x', 0)
@@ -843,6 +868,27 @@ def generate_pdf_from_data(pdf_id, template_path, output_folder, new_filename):
                         formatted_date = text
 
                     print(f"Inserting date for field '{field['name']}' at position ({x_points}, {y_points}) with fontsize {fontsize}")
+                    page.insert_text((x_points, y_points), formatted_date, fontname='helv', fontsize=fontsize)
+
+                elif field['type'] == 'tanggal-date':
+                    x_points = field.get('position', {}).get('x', 0)
+                    y_points = field.get('position', {}).get('y', 0)
+                    fontsize = field.get('font_size', 12)
+
+                    # Ensure numerical values are correctly typed
+                    try:
+                        x_points = float(x_points)
+                        y_points = float(y_points)
+                        fontsize = float(fontsize)
+                    except ValueError as e:
+                        print(f"ValueError: {e}")
+                        continue
+
+                    # Get the current date and format it
+                    current_date = datetime.now()
+                    formatted_date = current_date.strftime('%d %B %Y')
+
+                    print(f"Inserting current date for field '{field['name']}' at position ({x_points}, {y_points}) with fontsize {fontsize}")
                     page.insert_text((x_points, y_points), formatted_date, fontname='helv', fontsize=fontsize)
 
             # Save the filled PDF to a new file
