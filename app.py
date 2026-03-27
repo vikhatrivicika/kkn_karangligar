@@ -1,3 +1,6 @@
+from dotenv import load_dotenv
+load_dotenv()
+
 from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify, send_from_directory
 import mysql.connector
 import os
@@ -40,10 +43,10 @@ app.config['UPLOAD_FOLDER_PROFIL'] = UPLOAD_FOLDER_PROFIL
 def get_db_connection():
     try:
         db = mysql.connector.connect(
-            host='127.0.0.1',
-            user='root',
-            password='',
-            database='kkn_karangligar'
+            host=os.environ.get('DB_HOST'),
+            user=os.environ.get('DB_USER'),
+            password=os.environ.get('DB_PASSWORD'),
+            database=os.environ.get('DB_NAME')
         )
         print("Database connection successful")
         return db
@@ -153,6 +156,15 @@ def blog(id):
         cursor.execute("SELECT * FROM tbl_t_post WHERE id_ttp = %s", (id,))
         post = cursor.fetchone()
         if post:
+            # Mengubah timestamp menjadi format tanggal yang diinginkan
+            timestamp = post.get('created_time_ttp')
+            if isinstance(timestamp, int):
+                formatted_time = datetime.fromtimestamp(timestamp).strftime('%d %B %Y %H:%M')
+            elif isinstance(timestamp, datetime):
+                formatted_time = timestamp.strftime('%d %B %Y %H:%M')
+            else:
+                formatted_time = "Invalid timestamp format"
+            post['created_time_ttp'] = formatted_time
             return render_template('blog.html', post=post)
         else:
             return "Post not found"
@@ -494,7 +506,7 @@ def edit_post(id):
             cursor.execute("SELECT * FROM tbl_t_post WHERE id_ttp = %s", (id,))
             post = cursor.fetchone()
             
-            cursor.execute("SELECT * FROM tbl_m_label")
+            cursor.execute("SELECT * FROM tbl_m_label WHERE delected_tml IS NULL")
             labels = cursor.fetchall()
             
             return render_template('admin/edit_post.html', post=post, labels=labels)
@@ -532,7 +544,7 @@ def edit_label(id):
         return "Database connection error"
     return redirect(url_for('login'))
 
-@app.route('/admin/delete_label/<int:id>')
+@app.route('/admin/delete_label/<int:id>', methods=['POST'])
 def delete_label(id):
     if check_session_timeout() and 'loggedin' in session:
         db = get_db_connection()
