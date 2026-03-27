@@ -11,12 +11,8 @@
 
 ## 📸 Screenshot
 
-> *(Tambahkan screenshot di sini setelah upload ke folder `screenshots/`)*
-
-```
-screenshots/
-├── homepage.png
-├── admin.png
+![Homepage](screenshots/homepage.png)
+![Admin](screenshots/admin.png)
 ```
 
 ---
