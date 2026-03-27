@@ -3,4 +3,4 @@ __pycache__/
 .env
 uploads/
 output_pdfs/
-*.sql
+*.sql.env
