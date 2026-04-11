@@ -1,4 +1,4 @@
-# 🌾 Website Desa KKN Karangligar
+# 🌾 Website KKN Desa Karangligar
 
 > Platform digital desa berbasis web untuk mendukung pelayanan publik, informasi warga, dan administrasi desa secara modern dan efisien.
 
